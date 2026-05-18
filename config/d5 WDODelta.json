@@ -1,0 +1,518 @@
+{
+  "name": "d5 WDODelta",
+  "areas": [
+    {
+      "id": "10-19",
+      "name": "WDODelta",
+      "description": "Kernorganisatiestructuur, strategie en operationeel beheer",
+      "tags": [
+        "organisatie",
+        "beheer",
+        "operaties",
+        "strategie",
+        "toezicht"
+      ],
+      "categories": [
+        {
+          "id": "11",
+          "name": "WDODelta organisatie onderdelen",
+          "description": "Organisatieafdelingen, divisies en structurele componenten",
+          "tags": [
+            "afdelingen",
+            "divisies",
+            "structuur",
+            "organisatie"
+          ],
+          "items": [
+            {
+              "id": "d5.11.10",
+              "name": "Ethiek commissie"
+            }
+          ]
+        },
+        {
+          "id": "12",
+          "name": "OenA",
+          "description": "Analyse- en onderzoeksfuncties",
+          "tags": [
+            "analyse",
+            "onderzoek",
+            "rapportage",
+            "inzichten"
+          ]
+        },
+        {
+          "id": "13",
+          "name": "Datalab, CIO-office, en bedrijfsbureau",
+          "description": "Datawetenschappen, analytics en experimentele initiatieven",
+          "tags": [
+            "datawetenschappen",
+            "analytics",
+            "experimenten",
+            "lab"
+          ],
+          "items": [
+            {
+              "id": "d5.13.12",
+              "name": "2026 CIO-office"
+            },
+            {
+              "id": "d5.13.11",
+              "name": "Samenwerking CIO-office"
+            },
+            {
+              "id": "d5.13.08",
+              "name": "Samenwerking in Datalab"
+            },
+            {
+              "id": "d5.13.09",
+              "name": "Visie, strategie, aansturing volgens Jelle"
+            }
+          ]
+        },
+        {
+          "id": "14",
+          "name": "Strategisch",
+          "description": "Strategische planning en langetermijnrichting",
+          "tags": [
+            "strategie",
+            "planning",
+            "visie",
+            "richting"
+          ]
+        },
+        {
+          "id": "15",
+          "name": "Operationeel",
+          "description": "Dagelijkse operaties en operationele procedures",
+          "tags": [
+            "operaties",
+            "procedures",
+            "processen",
+            "dagelijks-beheer"
+          ]
+        },
+        {
+          "id": "16",
+          "name": "Ondersteuning",
+          "description": "Ondersteunende functies en administratieve diensten",
+          "tags": [
+            "ondersteuning",
+            "admin",
+            "diensten",
+            "infrastructuur"
+          ]
+        },
+        {
+          "id": "18",
+          "name": "Individuen",
+          "description": "Personeelsgegevens en individuele profielen",
+          "tags": [
+            "personeel",
+            "profielen",
+            "mensen",
+            "personeel"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "20-29",
+      "name": "Organisaties en mensen",
+      "description": "Externe organisaties, stakeholders en interpersoonlijke relatiese",
+      "tags": [
+        "stakeholders",
+        "partners",
+        "externe-relaties",
+        "netwerken"
+      ],
+      "categories": [
+        {
+          "id": "20",
+          "name": "Meta",
+          "description": "",
+          "tags": [],
+          "items": []
+        },
+        {
+          "id": "21",
+          "name": "externe waterschappen",
+          "description": "",
+          "tags": [],
+          "items": [
+            {
+              "id": "d5.21.03",
+              "name": "Waterschap Vechstromen"
+            },
+            {
+              "id": "d5.21.01",
+              "name": "Wetterskip FryslÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢n"
+            },
+            {
+              "id": "d5.21.02",
+              "name": "Het waterschapshuis"
+            }
+          ]
+        },
+        {
+          "id": "22",
+          "name": "provincies",
+          "description": "",
+          "tags": [],
+          "items": []
+        },
+        {
+          "id": "23",
+          "name": "gemeenten",
+          "description": "",
+          "tags": [],
+          "items": []
+        },
+        {
+          "id": "24",
+          "name": "rijk",
+          "description": "",
+          "tags": [],
+          "items": []
+        },
+        {
+          "id": "25",
+          "name": "Europa en de wereld",
+          "description": "",
+          "tags": [],
+          "items": []
+        },
+        {
+          "id": "26",
+          "name": "advies- en onderzoekbureaus",
+          "description": "",
+          "tags": [],
+          "items": [
+            {
+              "id": "d5.26.05",
+              "name": "KNMI"
+            }
+          ]
+        },
+        {
+          "id": "27",
+          "name": "instellingen en universiteiten",
+          "description": "",
+          "tags": [],
+          "items": []
+        },
+        {
+          "id": "28",
+          "name": "personen",
+          "description": "",
+          "tags": [],
+          "items": []
+        }
+      ]
+    },
+    {
+      "id": "30-39",
+      "name": "Databronnen en modelleer software",
+      "description": "Gegevensbronnen, data-modellingtools en data-architectuur",
+      "tags": [
+        "gegevens",
+        "bronnen",
+        "modellering",
+        "architectuur",
+        "tools"
+      ],
+      "categories": [
+        {
+          "id": "30",
+          "name": "Meta",
+          "description": "",
+          "tags": [],
+          "items": []
+        },
+        {
+          "id": "31",
+          "name": "Overkoepelend",
+          "description": "",
+          "tags": [],
+          "items": [
+            {
+              "id": "d5.31.06",
+              "name": "Architectuur"
+            }
+          ]
+        },
+        {
+          "id": "32",
+          "name": "Meteorologie",
+          "description": "",
+          "tags": [
+            "neerslag",
+            "verdamping",
+            "wind"
+          ],
+          "items": [
+            {
+              "id": "d5.32.04",
+              "name": "International Radar Composite (IRC)"
+            },
+            {
+              "id": "d5.32.03",
+              "name": "WIWB OOMHD"
+            }
+          ]
+        },
+        {
+          "id": "33",
+          "name": "Watersysteem",
+          "description": "",
+          "tags": [],
+          "items": []
+        },
+        {
+          "id": "35",
+          "name": "Waterketen",
+          "description": "",
+          "tags": [],
+          "items": []
+        },
+        {
+          "id": "36",
+          "name": "Waterkwaliteit en ecologie",
+          "description": "",
+          "tags": [],
+          "items": []
+        },
+        {
+          "id": "37",
+          "name": "Afstandsmonitoring",
+          "description": "",
+          "tags": [],
+          "items": []
+        },
+        {
+          "id": "38",
+          "name": "Bedrijfsvoering",
+          "description": "",
+          "tags": [
+            "portfoliomanagement",
+            "projectmanagement"
+          ],
+          "items": [
+            {
+              "id": "d5.38.02",
+              "name": "Fortes Change Cloud"
+            }
+          ]
+        },
+        {
+          "id": "39",
+          "name": "Beheergebied",
+          "description": "GIS",
+          "tags": [],
+          "items": [
+            {
+              "id": "d5.39.01",
+              "name": "ArcGIS Pro"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "40-49",
+      "name": "Taken en ideeen",
+      "description": "Taken, projecten en innovatieve ideeen",
+      "tags": [
+        "projecten",
+        "taken"
+      ],
+      "categories": [
+        {
+          "id": "43",
+          "name": "Projecten 2023-2027",
+          "description": "",
+          "tags": [],
+          "items": []
+        }
+      ]
+    },
+    {
+      "id": "50-59",
+      "name": "Programmeren en development",
+      "description": "Softwareontwikkeling, programmeertalen en technische frameworks",
+      "tags": [
+        "programmering",
+        "ontwikkeling",
+        "software",
+        "codering",
+        "technologie"
+      ],
+      "categories": [
+        {
+          "id": "51",
+          "name": "Algemeen en taal onafhankelijk",
+          "description": "Algemene programmeerconcepten en taalagnostische praktijken",
+          "tags": [
+            "programmering",
+            "algemeen",
+            "best-practices",
+            "concepten"
+          ]
+        },
+        {
+          "id": "52",
+          "name": "Python",
+          "description": "Python-programmeertaal en frameworks",
+          "tags": [
+            "python",
+            "programmering",
+            "scripting",
+            "datawetenschappen"
+          ]
+        },
+        {
+          "id": "53",
+          "name": "Azure",
+          "description": "Microsoft Azure cloudplatform en diensten",
+          "tags": [
+            "azure",
+            "cloud",
+            "microsoft",
+            "infrastructuur"
+          ]
+        },
+        {
+          "id": "54",
+          "name": "Databases en SQL",
+          "description": "Databasebeheer en SQL-programmering",
+          "tags": [
+            "databases",
+            "sql",
+            "gegevens",
+            "persistentie"
+          ]
+        },
+        {
+          "id": "55",
+          "name": "Dashboarding en web",
+          "description": "Webontwikkeling, dashboards en gebruikersinterfaces",
+          "tags": [
+            "web",
+            "dashboards",
+            "ui",
+            "frontend",
+            "visualisatie"
+          ]
+        },
+        {
+          "id": "56",
+          "name": "Generative AI en LLM",
+          "description": "Generatieve AI, grote taalmodellen en AI-toepassingen",
+          "tags": [
+            "ai",
+            "llm",
+            "generatieve-ai",
+            "machine-learning",
+            "nlp"
+          ]
+        },
+        {
+          "id": "57",
+          "name": "AI, statistiek",
+          "description": "Kunstmatige intelligentie, statistiek en datawetenschappen",
+          "tags": [
+            "ai",
+            "statistiek",
+            "machine-learning",
+            "datawetenschappen"
+          ]
+        },
+        {
+          "id": "58",
+          "name": "OS, cli en overige programmeer talen",
+          "description": "Besturingssystemen, opdrachtregelinterfaces en andere programmeertalen",
+          "tags": [
+            "os",
+            "cli",
+            "talen",
+            "infrastructuur",
+            "tools"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "60-69",
+      "name": "Vakinhoud",
+      "description": "Domeinspecifieke kennis en beroepsdeskundige expertise",
+      "tags": [
+        "expertise",
+        "domeinkennis",
+        "onderwerp",
+        "specialisatie"
+      ],
+      "categories": []
+    },
+    {
+      "id": "90-99",
+      "name": "Ikzelf",
+      "description": "Persoonlijke professionele ontwikkeling en carrieregroei",
+      "tags": [
+        "persoonlijke-ontwikkeling"
+      ],
+      "categories": [
+        {
+          "id": "91",
+          "name": "Ontwikkelings- en jaargesprekken",
+          "description": "",
+          "tags": [],
+          "items": []
+        },
+        {
+          "id": "92",
+          "name": "Contracten",
+          "description": "",
+          "tags": [],
+          "items": []
+        },
+        {
+          "id": "93",
+          "name": "Declaraties",
+          "description": "",
+          "tags": [],
+          "items": [
+            {
+              "id": "d5.93.13",
+              "name": "2025"
+            },
+            {
+              "id": "d5.93.14",
+              "name": "2026"
+            }
+          ]
+        },
+        {
+          "id": "94",
+          "name": "Cursussen en opleidingen",
+          "description": "",
+          "tags": [],
+          "items": []
+        },
+        {
+          "id": "95",
+          "name": "Sociaal",
+          "description": "",
+          "tags": [],
+          "items": []
+        },
+        {
+          "id": "96",
+          "name": "Praktisch",
+          "description": "",
+          "tags": [],
+          "items": []
+        }
+      ]
+    }
+  ]
+}

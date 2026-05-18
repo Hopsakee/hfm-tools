@@ -1,0 +1,975 @@
+{
+  "name": "d1 Prive",
+  "areas": [
+    {
+      "id": "00-09",
+      "name": "Meta",
+      "description": "Meta-informatie, inbox, taken en persoonlijk kennisbeheer",
+      "tags": [
+        "meta",
+        "inbox",
+        "taken",
+        "pkm",
+        "software"
+      ],
+      "categories": [
+        {
+          "id": "01",
+          "name": "Inbox",
+          "description": "",
+          "tags": [],
+          "items": []
+        },
+        {
+          "id": "02",
+          "name": "Calendar and tasks",
+          "description": "",
+          "tags": [],
+          "items": []
+        },
+        {
+          "id": "03",
+          "name": "Jelle's PKM",
+          "description": "Persoonlijk kennisbeheersysteem",
+          "tags": [
+            "pkm",
+            "obsidian",
+            "johnny-decimal"
+          ],
+          "items": [
+            {
+              "id": "d1.03.02",
+              "name": "Obsidian geschiedenis"
+            },
+            {
+              "id": "d1.03.03",
+              "name": "Icons"
+            },
+            {
+              "id": "d1.03.04",
+              "name": "Obsidian status"
+            },
+            {
+              "id": "d1.03.08",
+              "name": "JelleDecimal system"
+            }
+          ]
+        },
+        {
+          "id": "04",
+          "name": "Software en digitaal",
+          "description": "",
+          "tags": [],
+          "items": []
+        }
+      ]
+    },
+    {
+      "id": "10-19",
+      "name": "Mensen en organisaties",
+      "description": "Relaties met mensen en organisaties",
+      "tags": [
+        "mensen",
+        "organisaties",
+        "relaties",
+        "netwerk"
+      ],
+      "categories": [
+        {
+          "id": "10",
+          "name": "Meta",
+          "description": "",
+          "tags": [],
+          "items": []
+        },
+        {
+          "id": "11",
+          "name": "Gezin",
+          "description": "",
+          "tags": [],
+          "items": [
+            {
+              "id": "d1.11.09",
+              "name": "@Bowie"
+            },
+            {
+              "id": "d1.11.13",
+              "name": "huishouden"
+            },
+            {
+              "id": "d1.11.07",
+              "name": "@Hidde"
+            },
+            {
+              "id": "d1.11.06",
+              "name": "@Jorik"
+            },
+            {
+              "id": "d1.11.01",
+              "name": "@Famke"
+            },
+            {
+              "id": "d1.11.08",
+              "name": "@Carlijn"
+            }
+          ]
+        },
+        {
+          "id": "12",
+          "name": "Familie",
+          "description": "",
+          "tags": [],
+          "items": [
+            {
+              "id": "d1.12.01",
+              "name": "Wim en Tineke"
+            }
+          ]
+        },
+        {
+          "id": "13",
+          "name": "Vrienden",
+          "description": "",
+          "tags": [],
+          "items": []
+        },
+        {
+          "id": "14",
+          "name": "Kerk",
+          "description": "",
+          "tags": [],
+          "items": [
+            {
+              "id": "d1.14.10",
+              "name": "CGK 2020-"
+            }
+          ]
+        },
+        {
+          "id": "15",
+          "name": "Buurt",
+          "description": "",
+          "tags": [],
+          "items": [
+            {
+              "id": "d1.15.01",
+              "name": "VSW"
+            },
+            {
+              "id": "d1.15.03",
+              "name": "Isala"
+            }
+          ]
+        },
+        {
+          "id": "16",
+          "name": "Nederland",
+          "description": "",
+          "tags": [],
+          "items": []
+        },
+        {
+          "id": "17",
+          "name": "Wereld",
+          "description": "",
+          "tags": [],
+          "items": []
+        },
+        {
+          "id": "19",
+          "name": "Mensen",
+          "description": "",
+          "tags": [],
+          "items": []
+        }
+      ]
+    },
+    {
+      "id": "20-29",
+      "name": "Geld goed en verzekeringen",
+      "description": "FinanciÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ«n, bezittingen en verzekeringen",
+      "tags": [
+        "financiÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ«n",
+        "bezittingen",
+        "verzekeringen",
+        "huis"
+      ],
+      "categories": [
+        {
+          "id": "20",
+          "name": "Meta",
+          "description": "",
+          "tags": [],
+          "items": []
+        },
+        {
+          "id": "21",
+          "name": "Huis",
+          "description": "",
+          "tags": [],
+          "items": [
+            {
+              "id": "d1.21.03",
+              "name": "Verbouwing huis 2022"
+            }
+          ]
+        },
+        {
+          "id": "22",
+          "name": "Spullen media",
+          "description": "",
+          "tags": [],
+          "items": [
+            {
+              "id": "d1.22.01",
+              "name": "Computer"
+            },
+            {
+              "id": "d1.22.03",
+              "name": "Thuis netwerk"
+            },
+            {
+              "id": "d1.22.04",
+              "name": "Audio"
+            },
+            {
+              "id": "d1.22.05",
+              "name": "TV"
+            },
+            {
+              "id": "d1.22.06",
+              "name": "Spelcomputers"
+            },
+            {
+              "id": "d1.22.98",
+              "name": "Organisaties"
+            }
+          ]
+        },
+        {
+          "id": "23",
+          "name": "Spullen huisraad",
+          "description": "",
+          "tags": [],
+          "items": []
+        },
+        {
+          "id": "24",
+          "name": "Spullen rest",
+          "description": "truien jassen sokken ondergoed t-shirts blouses broeken",
+          "tags": [],
+          "items": [
+            {
+              "id": "d1.24.01",
+              "name": "kleding"
+            }
+          ]
+        },
+        {
+          "id": "25",
+          "name": "Abonnementen",
+          "description": "",
+          "tags": [],
+          "items": [
+            {
+              "id": "d1.25.01",
+              "name": "Internet + telefoon vast"
+            },
+            {
+              "id": "d1.25.03",
+              "name": "Tijdschrift abonnementen"
+            }
+          ]
+        },
+        {
+          "id": "26",
+          "name": "Auto",
+          "description": "",
+          "tags": [],
+          "items": []
+        },
+        {
+          "id": "27",
+          "name": "Verzekering",
+          "description": "",
+          "tags": [],
+          "items": []
+        },
+        {
+          "id": "28",
+          "name": "Belasting en financieen",
+          "description": "",
+          "tags": [],
+          "items": [
+            {
+              "id": "d1.28.01",
+              "name": "Belasting 2023"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "30-39",
+      "name": "Weten waarvoor men leeft",
+      "description": "Levensbeschouwing en zingeving",
+      "tags": [
+        "zingeving",
+        "geloof",
+        "spiritualiteit"
+      ],
+      "categories": [
+        {
+          "id": "30",
+          "name": "Meta",
+          "description": "",
+          "tags": [],
+          "items": []
+        },
+        {
+          "id": "33",
+          "name": "Christianity",
+          "description": "",
+          "tags": [],
+          "items": [
+            {
+              "id": "d1.33.97",
+              "name": "Preken van opa"
+            },
+            {
+              "id": "d1.33.99",
+              "name": "Verzamelbak"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "40-49",
+      "name": "Weten hoe men leeft",
+      "description": "Persoonlijke ontwikkeling, gezondheid en vaardigheden",
+      "tags": [
+        "gezondheid",
+        "ontwikkeling",
+        "vaardigheden",
+        "productiviteit"
+      ],
+      "categories": [
+        {
+          "id": "40",
+          "name": "Meta",
+          "description": "",
+          "tags": [],
+          "items": []
+        },
+        {
+          "id": "41",
+          "name": "Mentale gezondheid",
+          "description": "",
+          "tags": [],
+          "items": [
+            {
+              "id": "d1.41.01",
+              "name": "ADHD algemeen"
+            },
+            {
+              "id": "d1.41.04",
+              "name": "ADHD behandeltraject Mindfit"
+            },
+            {
+              "id": "d1.41.05",
+              "name": "Signaleringsplan"
+            }
+          ]
+        },
+        {
+          "id": "42",
+          "name": "Lichamelijke gezondheid en sport",
+          "description": "",
+          "tags": [],
+          "items": [
+            {
+              "id": "d1.42.01",
+              "name": "Thomas training"
+            },
+            {
+              "id": "d1.42.09",
+              "name": "Mond verzorging"
+            }
+          ]
+        },
+        {
+          "id": "43",
+          "name": "Kennisbeheer en denken",
+          "description": "Obsidian, Johnny Decimal, visual thinking, mindmaps, writing workflow. ",
+          "tags": [],
+          "items": [
+            {
+              "id": "d1.43.01",
+              "name": "Visual thinking"
+            },
+            {
+              "id": "d1.43.02",
+              "name": "Obsidian"
+            },
+            {
+              "id": "d1.43.04",
+              "name": "Web artikelen"
+            },
+            {
+              "id": "d1.43.05",
+              "name": "Lezen om te leren"
+            },
+            {
+              "id": "d1.43.07",
+              "name": "Tools om te denken"
+            },
+            {
+              "id": "d1.43.10",
+              "name": "Mindmap flowcharts etc"
+            },
+            {
+              "id": "d1.43.11",
+              "name": "Lezen, leren, schrijven, archiveren, vinden toolflow"
+            }
+          ]
+        },
+        {
+          "id": "44",
+          "name": "Leren produceren",
+          "description": "",
+          "tags": [],
+          "items": [
+            {
+              "id": "d1.44.02",
+              "name": "Windows 11 software"
+            },
+            {
+              "id": "d1.44.03",
+              "name": "Internet software"
+            },
+            {
+              "id": "d1.44.04",
+              "name": "Taken en projecten doen"
+            },
+            {
+              "id": "d1.44.05",
+              "name": "Taken en projecten en habits registreren"
+            },
+            {
+              "id": "d1.44.07",
+              "name": "Speech to text en text to speech"
+            }
+          ]
+        },
+        {
+          "id": "45",
+          "name": "Opvoeding en ouderschap",
+          "description": "parenting-specific guidance: internet safety for kids, listening to children, raising children content. Audience-based by nature: this is knowledge about being a parent.\n\nThe test then is: \"Is this about being a parent?\" → 45. \"Is this a skill for dealing with people in general?\" → 46.",
+          "tags": [],
+          "items": []
+        },
+        {
+          "id": "46",
+          "name": "Communiceren en omgaan met mensen",
+          "description": "general interpersonal skills: persuasion, communication, understanding people. These apply to everyone including family, but they're skills you develop about yourself, not content about raising children.\n\nThe test then is: \"Is this about being a parent?\" → 45. \"Is this a skill for dealing with people in general?\" → 46.",
+          "tags": [],
+          "items": [
+            {
+              "id": "d1.46.02",
+              "name": "Overtuigen"
+            },
+            {
+              "id": "d1.46.98",
+              "name": "Luisteren naar kinderen"
+            },
+            {
+              "id": "d1.46.99",
+              "name": "Mensen"
+            }
+          ]
+        },
+        {
+          "id": "47",
+          "name": "Biografieën",
+          "description": "",
+          "tags": [],
+          "items": []
+        }
+      ]
+    },
+    {
+      "id": "50-59",
+      "name": "Christianity and religion",
+      "description": "Christendom, religie en spiritualiteit",
+      "tags": [
+        "christendom",
+        "religie",
+        "theologie",
+        "bijbel"
+      ],
+      "categories": [
+        {
+          "id": "50",
+          "name": "Meta",
+          "description": "",
+          "tags": [],
+          "items": []
+        },
+        {
+          "id": "51",
+          "name": "Church history and ecclesiology",
+          "description": "",
+          "tags": [],
+          "items": []
+        },
+        {
+          "id": "52",
+          "name": "Scripture and biblical studies",
+          "description": "",
+          "tags": [],
+          "items": [
+            {
+              "id": "d1.52.01",
+              "name": "Psalmen"
+            },
+            {
+              "id": "d1.52.98",
+              "name": "Preken opa"
+            },
+            {
+              "id": "d1.52.99",
+              "name": "Verzamelbak"
+            }
+          ]
+        },
+        {
+          "id": "53",
+          "name": "Theology and doctrine",
+          "description": "",
+          "tags": [],
+          "items": [
+            {
+              "id": "d1.53.97",
+              "name": "Why christianity was never meant to be simple"
+            },
+            {
+              "id": "d1.53.98",
+              "name": "Mere Christianity"
+            },
+            {
+              "id": "d1.53.99",
+              "name": "Mensen"
+            }
+          ]
+        },
+        {
+          "id": "54",
+          "name": "Christianity and society",
+          "description": "",
+          "tags": [],
+          "items": [
+            {
+              "id": "d1.54.01",
+              "name": "Christenen en techniek"
+            },
+            {
+              "id": "d1.54.96",
+              "name": "Staan in de wereld van nu"
+            },
+            {
+              "id": "d1.54.97",
+              "name": "Geduld met God"
+            },
+            {
+              "id": "d1.54.98",
+              "name": "Schurken en heiligen"
+            },
+            {
+              "id": "d1.54.99",
+              "name": "Mensen"
+            }
+          ]
+        },
+        {
+          "id": "55",
+          "name": "Christian living",
+          "description": "",
+          "tags": [],
+          "items": [
+            {
+              "id": "d1.55.02",
+              "name": "Bidden"
+            },
+            {
+              "id": "d1.55.03",
+              "name": "De imitatie van Christus"
+            },
+            {
+              "id": "d1.55.97",
+              "name": "You're only human"
+            },
+            {
+              "id": "d1.55.98",
+              "name": "Personen"
+            }
+          ]
+        },
+        {
+          "id": "56",
+          "name": "Other religions and spirituality",
+          "description": "",
+          "tags": [],
+          "items": []
+        }
+      ]
+    },
+    {
+      "id": "60-69",
+      "name": "Filosofie",
+      "description": "Filosofie door de eeuwen heen",
+      "tags": [
+        "filosofie",
+        "denken",
+        "wijsbegeerte"
+      ],
+      "categories": [
+        {
+          "id": "60",
+          "name": "Meta",
+          "description": "",
+          "tags": [],
+          "items": []
+        },
+        {
+          "id": "61",
+          "name": "Presocratische periode",
+          "description": "",
+          "tags": [],
+          "items": []
+        },
+        {
+          "id": "62",
+          "name": "Atheense periode",
+          "description": "",
+          "tags": [],
+          "items": []
+        },
+        {
+          "id": "63",
+          "name": "Hellenistische periode",
+          "description": "",
+          "tags": [],
+          "items": []
+        },
+        {
+          "id": "64",
+          "name": "Middeleeuwse periode",
+          "description": "",
+          "tags": [],
+          "items": []
+        },
+        {
+          "id": "65",
+          "name": "De 17e en 18e eeuw",
+          "description": "",
+          "tags": [],
+          "items": []
+        },
+        {
+          "id": "66",
+          "name": "De 19e eeuw",
+          "description": "",
+          "tags": [],
+          "items": [
+            {
+              "id": "d1.66.01",
+              "name": "Kierkegaard"
+            }
+          ]
+        },
+        {
+          "id": "67",
+          "name": "De 20e eeuw",
+          "description": "",
+          "tags": [],
+          "items": []
+        },
+        {
+          "id": "68",
+          "name": "De 21e eeuw",
+          "description": "",
+          "tags": [],
+          "items": []
+        },
+        {
+          "id": "69",
+          "name": "Boek notities",
+          "description": "",
+          "tags": [],
+          "items": [
+            {
+              "id": "d1.69.01",
+              "name": "Practicing stoic"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "70-79",
+      "name": "Wetenschap",
+      "description": "Wetenschap en academische onderwerpen",
+      "tags": [
+        "wetenschap",
+        "kennis",
+        "academisch"
+      ],
+      "categories": [
+        {
+          "id": "70",
+          "name": "Meta",
+          "description": "",
+          "tags": [],
+          "items": []
+        },
+        {
+          "id": "71",
+          "name": "Organisational management",
+          "description": "",
+          "tags": [],
+          "items": [
+            {
+              "id": "d1.71.97",
+              "name": "The startup way"
+            },
+            {
+              "id": "d1.71.98",
+              "name": "Uit het transformatiemoeras"
+            },
+            {
+              "id": "d1.71.99",
+              "name": "Vergaardbak"
+            }
+          ]
+        },
+        {
+          "id": "72",
+          "name": "Economie",
+          "description": "",
+          "tags": [],
+          "items": [
+            {
+              "id": "d1.72.98",
+              "name": "Armoede uitgelegd aan mensen met geld"
+            },
+            {
+              "id": "d1.72.99",
+              "name": "Personen"
+            }
+          ]
+        },
+        {
+          "id": "73",
+          "name": "Sociologie, cultuur en maatschappij",
+          "description": "",
+          "tags": [],
+          "items": [
+            {
+              "id": "d1.73.95",
+              "name": "Opstand"
+            },
+            {
+              "id": "d1.73.96",
+              "name": "Het recht van de snelste"
+            },
+            {
+              "id": "d1.73.97",
+              "name": "Hoe migratie echt werkt"
+            },
+            {
+              "id": "d1.73.98",
+              "name": "Generatie angstoornis"
+            },
+            {
+              "id": "d1.73.99",
+              "name": "Personen"
+            }
+          ]
+        },
+        {
+          "id": "74",
+          "name": "Politiek, overheid, instituties, recht",
+          "description": "",
+          "tags": [],
+          "items": [
+            {
+              "id": "d1.74.01",
+              "name": "Abundance"
+            },
+            {
+              "id": "d1.74.98",
+              "name": "De vloek van Big Tech"
+            }
+          ]
+        },
+        {
+          "id": "75",
+          "name": "Biologie, ecologie, aardwetenschap en atmosfeer",
+          "description": "",
+          "tags": [],
+          "items": []
+        },
+        {
+          "id": "76",
+          "name": "Wiskunde, Natuurkunde, Scheidkunde",
+          "description": "",
+          "tags": [],
+          "items": [
+            {
+              "id": "d1.76.01",
+              "name": "Large Language Models theorie"
+            }
+          ]
+        },
+        {
+          "id": "77",
+          "name": "Geschiedenis",
+          "description": "",
+          "tags": [],
+          "items": [
+            {
+              "id": "d1.77.99",
+              "name": "Vergaarbak"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "80-89",
+      "name": "Weten van schoonheid en vermaak",
+      "description": "Entertainment, kunst en vrije tijd",
+      "tags": [
+        "entertainment",
+        "kunst",
+        "vrije-tijd",
+        "hobby"
+      ],
+      "categories": [
+        {
+          "id": "80",
+          "name": "Meta",
+          "description": "",
+          "tags": [],
+          "items": []
+        },
+        {
+          "id": "81",
+          "name": "Literatuur en films",
+          "description": "",
+          "tags": [],
+          "items": []
+        },
+        {
+          "id": "82",
+          "name": "PC Games",
+          "description": "",
+          "tags": [],
+          "items": [
+            {
+              "id": "d1.82.01",
+              "name": "Game instellingen global"
+            },
+            {
+              "id": "d1.82.02",
+              "name": "Tactical shooters"
+            },
+            {
+              "id": "d1.82.03",
+              "name": "Dumb shooters"
+            },
+            {
+              "id": "d1.82.04",
+              "name": "Met kinderen"
+            },
+            {
+              "id": "d1.82.06",
+              "name": "Audio software"
+            },
+            {
+              "id": "d1.82.07",
+              "name": "Game ratings"
+            },
+            {
+              "id": "d1.82.99",
+              "name": "Nog ordenen"
+            }
+          ]
+        },
+        {
+          "id": "83",
+          "name": "Board games",
+          "description": "",
+          "tags": [],
+          "items": [
+            {
+              "id": "d1.83.01",
+              "name": "Gloomhaven - Jaws of the Lion"
+            }
+          ]
+        },
+        {
+          "id": "84",
+          "name": "Vakantie, uitjes",
+          "description": "",
+          "tags": [],
+          "items": [
+            {
+              "id": "d1.84.05",
+              "name": "Dagje uit tips kinderen"
+            }
+          ]
+        },
+        {
+          "id": "85",
+          "name": "Muziek en beeldende kunst",
+          "description": "",
+          "tags": [],
+          "items": []
+        },
+        {
+          "id": "86",
+          "name": "Voedsel",
+          "description": "",
+          "tags": [],
+          "items": [
+            {
+              "id": "d1.86.01",
+              "name": "Drank"
+            },
+            {
+              "id": "d1.86.02",
+              "name": "Bier"
+            },
+            {
+              "id": "d1.86.04",
+              "name": "Gebak"
+            },
+            {
+              "id": "d1.86.05",
+              "name": "Koffie"
+            }
+          ]
+        },
+        {
+          "id": "87",
+          "name": "Werk",
+          "description": "",
+          "tags": [],
+          "items": []
+        }
+      ]
+    }
+  ]
+}

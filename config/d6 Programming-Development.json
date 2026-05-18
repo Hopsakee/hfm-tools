@@ -1,0 +1,533 @@
+{
+  "name": "d6 Programming-Development",
+  "areas": [
+    {
+      "id": "10-19",
+      "name": "Programming Languages",
+      "description": "Programmeertalen en taal-specifieke concepten",
+      "tags": [
+        "programmeren",
+        "talen",
+        "syntax",
+        "concepten"
+      ],
+      "categories": [
+        {
+          "id": "11",
+          "name": "Python",
+          "description": "",
+          "tags": [],
+          "items": []
+        },
+        {
+          "id": "12",
+          "name": "JavaScript en TypeScript",
+          "description": "",
+          "tags": [],
+          "items": []
+        },
+        {
+          "id": "13",
+          "name": "Shell and terminals",
+          "description": "",
+          "tags": [],
+          "items": [
+            {
+              "id": "d6.13.01",
+              "name": "tmux"
+            },
+            {
+              "id": "d6.13.02",
+              "name": "Powershell"
+            },
+            {
+              "id": "d6.13.03",
+              "name": "bash"
+            },
+            {
+              "id": "d6.13.04",
+              "name": "cmd"
+            },
+            {
+              "id": "d6.13.05",
+              "name": "zsh"
+            }
+          ]
+        },
+        {
+          "id": "14",
+          "name": "HTML en CSS",
+          "description": "",
+          "tags": [],
+          "items": []
+        },
+        {
+          "id": "15",
+          "name": "SQL",
+          "description": "",
+          "tags": [],
+          "items": []
+        },
+        {
+          "id": "16",
+          "name": "Overige talen",
+          "description": "",
+          "tags": [],
+          "items": []
+        },
+        {
+          "id": "17",
+          "name": "Taal-onafhankelijke concepten",
+          "description": "",
+          "tags": [],
+          "items": []
+        }
+      ]
+    },
+    {
+      "id": "20-29",
+      "name": "Development Environment en Tools",
+      "description": "Ontwikkelomgeving, editors en tooling",
+      "tags": [
+        "tools",
+        "editors",
+        "ide",
+        "development"
+      ],
+      "categories": [
+        {
+          "id": "21",
+          "name": "Code editors en IDEs",
+          "description": "",
+          "tags": [],
+          "items": []
+        },
+        {
+          "id": "22",
+          "name": "Version control",
+          "description": "",
+          "tags": [],
+          "items": []
+        },
+        {
+          "id": "23",
+          "name": "CLI tools en terminal",
+          "description": "",
+          "tags": [],
+          "items": []
+        },
+        {
+          "id": "24",
+          "name": "Package managers en build tools",
+          "description": "",
+          "tags": [],
+          "items": []
+        },
+        {
+          "id": "25",
+          "name": "Debugging en profiling",
+          "description": "",
+          "tags": [],
+          "items": []
+        }
+      ]
+    },
+    {
+      "id": "30-39",
+      "name": "Operating Systems en Infrastructure",
+      "description": "Besturingssystemen, cloud en infrastructuur",
+      "tags": [
+        "os",
+        "linux",
+        "windows",
+        "cloud",
+        "infra"
+      ],
+      "categories": [
+        {
+          "id": "31",
+          "name": "Linux",
+          "description": "",
+          "tags": [],
+          "items": []
+        },
+        {
+          "id": "32",
+          "name": "Windows",
+          "description": "",
+          "tags": [],
+          "items": []
+        },
+        {
+          "id": "33",
+          "name": "Docker en containers",
+          "description": "",
+          "tags": [],
+          "items": []
+        },
+        {
+          "id": "34",
+          "name": "Cloud platforms",
+          "description": "",
+          "tags": [],
+          "items": [
+            {
+              "id": "d6.34.01",
+              "name": "Hetzner"
+            },
+            {
+              "id": "d6.34.03",
+              "name": "Datalab Azure innovatie omgeving"
+            }
+          ]
+        },
+        {
+          "id": "35",
+          "name": "Networking en VPN",
+          "description": "",
+          "tags": [],
+          "items": []
+        },
+        {
+          "id": "36",
+          "name": "CI-CD en deployment",
+          "description": "",
+          "tags": [],
+          "items": []
+        }
+      ]
+    },
+    {
+      "id": "40-49",
+      "name": "Data en Databases",
+      "description": "Databases, data processing en visualisatie",
+      "tags": [
+        "data",
+        "databases",
+        "etl",
+        "visualisatie"
+      ],
+      "categories": [
+        {
+          "id": "41",
+          "name": "SQLite",
+          "description": "",
+          "tags": [],
+          "items": []
+        },
+        {
+          "id": "42",
+          "name": "Overige databases",
+          "description": "",
+          "tags": [],
+          "items": []
+        },
+        {
+          "id": "43",
+          "name": "Data processing en ETL",
+          "description": "",
+          "tags": [],
+          "items": []
+        },
+        {
+          "id": "44",
+          "name": "Data visualisatie en dashboarding",
+          "description": "",
+          "tags": [],
+          "items": []
+        }
+      ]
+    },
+    {
+      "id": "50-59",
+      "name": "Web Development",
+      "description": "Webontwikkeling, frontend en backend",
+      "tags": [
+        "web",
+        "frontend",
+        "backend",
+        "api"
+      ],
+      "categories": [
+        {
+          "id": "51",
+          "name": "Frontend",
+          "description": "",
+          "tags": [],
+          "items": []
+        },
+        {
+          "id": "52",
+          "name": "Backend",
+          "description": "",
+          "tags": [],
+          "items": []
+        },
+        {
+          "id": "53",
+          "name": "APIs en REST",
+          "description": "",
+          "tags": [],
+          "items": []
+        },
+        {
+          "id": "54",
+          "name": "Web protocols en HTTP",
+          "description": "",
+          "tags": [],
+          "items": []
+        }
+      ]
+    },
+    {
+      "id": "60-69",
+      "name": "AI en Machine Learning",
+      "description": "Kunstmatige intelligentie en machine learning",
+      "tags": [
+        "ai",
+        "ml",
+        "machine-learning",
+        "statistiek"
+      ],
+      "categories": [
+        {
+          "id": "61",
+          "name": "ML fundamentals en theory",
+          "description": "",
+          "tags": [],
+          "items": []
+        },
+        {
+          "id": "62",
+          "name": "ML libraries",
+          "description": "",
+          "tags": [],
+          "items": []
+        },
+        {
+          "id": "63",
+          "name": "ML in production en MLOps",
+          "description": "",
+          "tags": [],
+          "items": []
+        },
+        {
+          "id": "64",
+          "name": "Statistics en probability",
+          "description": "",
+          "tags": [],
+          "items": []
+        },
+        {
+          "id": "65",
+          "name": "Computer vision",
+          "description": "",
+          "tags": [],
+          "items": []
+        },
+        {
+          "id": "66",
+          "name": "NLP classic",
+          "description": "",
+          "tags": [],
+          "items": []
+        }
+      ]
+    },
+    {
+      "id": "70-79",
+      "name": "LLM en Generative AI",
+      "description": "Grote taalmodellen en generatieve AI",
+      "tags": [
+        "llm",
+        "generative-ai",
+        "prompting",
+        "agents"
+      ],
+      "categories": [
+        {
+          "id": "71",
+          "name": "LLM fundamentals",
+          "description": "",
+          "tags": [],
+          "items": []
+        },
+        {
+          "id": "72",
+          "name": "Models en providers",
+          "description": "",
+          "tags": [],
+          "items": [
+            {
+              "id": "d6.72.01",
+              "name": "Inference providers"
+            },
+            {
+              "id": "d6.72.03",
+              "name": "Host models local"
+            },
+            {
+              "id": "d6.72.02",
+              "name": "Host models cloud"
+            }
+          ]
+        },
+        {
+          "id": "73",
+          "name": "Prompt engineering",
+          "description": "",
+          "tags": [],
+          "items": [
+            {
+              "id": "d6.73.01",
+              "name": "Image models - conversational"
+            }
+          ]
+        },
+        {
+          "id": "74",
+          "name": "RAG embeddings en retrieval",
+          "description": "",
+          "tags": [],
+          "items": []
+        },
+        {
+          "id": "75",
+          "name": "Agents en tool use",
+          "description": "",
+          "tags": [],
+          "items": []
+        },
+        {
+          "id": "76",
+          "name": "Evals en metrics",
+          "description": "",
+          "tags": [],
+          "items": []
+        },
+        {
+          "id": "77",
+          "name": "Building LLM applications",
+          "description": "",
+          "tags": [],
+          "items": [
+            {
+              "id": "d6.77.01",
+              "name": "AI familie project"
+            }
+          ]
+        },
+        {
+          "id": "78",
+          "name": "Fine-tuning en LoRA",
+          "description": "",
+          "tags": [],
+          "items": []
+        },
+        {
+          "id": "79",
+          "name": "Coding with LLMs",
+          "description": "",
+          "tags": [],
+          "items": []
+        }
+      ]
+    },
+    {
+      "id": "80-89",
+      "name": "Software Engineering Practices",
+      "description": "Software engineering praktijken en standaarden",
+      "tags": [
+        "engineering",
+        "testing",
+        "kwaliteit",
+        "architectuur"
+      ],
+      "categories": [
+        {
+          "id": "81",
+          "name": "Testing",
+          "description": "",
+          "tags": [],
+          "items": []
+        },
+        {
+          "id": "82",
+          "name": "Code quality en standards",
+          "description": "",
+          "tags": [],
+          "items": []
+        },
+        {
+          "id": "83",
+          "name": "Documentation",
+          "description": "",
+          "tags": [],
+          "items": []
+        },
+        {
+          "id": "84",
+          "name": "Licensing en legal",
+          "description": "",
+          "tags": [],
+          "items": []
+        },
+        {
+          "id": "85",
+          "name": "Architecture en design patterns",
+          "description": "",
+          "tags": [],
+          "items": []
+        },
+        {
+          "id": "86",
+          "name": "Development workflows",
+          "description": "",
+          "tags": [],
+          "items": []
+        }
+      ]
+    },
+    {
+      "id": "90-99",
+      "name": "Meta en Learning",
+      "description": "Leren, cursussen en meta-informatie",
+      "tags": [
+        "leren",
+        "cursussen",
+        "resources",
+        "templates"
+      ],
+      "categories": [
+        {
+          "id": "91",
+          "name": "Courses en certifications",
+          "description": "",
+          "tags": [],
+          "items": []
+        },
+        {
+          "id": "92",
+          "name": "Books en resources",
+          "description": "",
+          "tags": [],
+          "items": []
+        },
+        {
+          "id": "93",
+          "name": "Project templates",
+          "description": "",
+          "tags": [],
+          "items": []
+        },
+        {
+          "id": "94",
+          "name": "Ideas en tasks",
+          "description": "",
+          "tags": [],
+          "items": []
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+[project]
+name = "filesorter"
+version = "0.1.0"
+description = "Keyboard-driven TUI file sorter with Johnny Decimal support"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "fastcore>=1.12.31",
+    "nbdev>=3.0.12",
+    "openpyxl>=3.1.5",
+    "pdfplumber>=0.11.9",
+    "pydantic>=2.12.5",
+    "python-docx>=1.2.0",
+    "pyyaml>=6.0.3",
+    "rich>=14.3.3",
+    "textual>=8.1.1",
+]
+
+[tool.nbdev]
+lib_name = "filesorter"
+lib_path = "filesorter"
+nbs_path = "nbs"
+doc_path = "_docs"
+branch = "main"
+min_python = "3.11"
