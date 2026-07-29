@@ -6,7 +6,7 @@
 __all__ = ['DOMAIN_ONLY', 'APP_CSS', 'StatusPicker', 'DomainPicker', 'AreaPicker', 'NoteInfoPanel', 'NotePreviewPanel',
            'InboxTriageApp', 'main']
 
-# %% ../nbs/11_inbox_app.ipynb #c311be43
+# %% ../nbs/11_inbox_app.ipynb #98711e76
 from pathlib import Path
 
 from rich.text import Text
@@ -28,12 +28,13 @@ from filesorter.inbox import (
     load_hd_domains,
     load_note_statuses,
     note_preview,
+    drain_deletes,
     pending_deletes,
     obsidian_open,
     parse_note,
 )
 
-# %% ../nbs/11_inbox_app.ipynb #bde8561d
+# %% ../nbs/11_inbox_app.ipynb #67e36e10
 class _KeyedPicker(ModalScreen[str | None]):
     """Modal list where each row has its own shortcut key. Esc cancels."""
 
@@ -95,7 +96,7 @@ class AreaPicker(_KeyedPicker):
 #: Sentinel returned by AreaPicker when Jelle declines to narrow to an area.
 DOMAIN_ONLY = "__domain_only__"
 
-# %% ../nbs/11_inbox_app.ipynb #1d394578
+# %% ../nbs/11_inbox_app.ipynb #e874469c
 class NoteInfoPanel(Static):
     """Left panel: which note, where from, how connected."""
 
@@ -128,7 +129,7 @@ class NotePreviewPanel(Static):
         elif not body: self.update(Text("(no body — frontmatter only)", style="dim"))
         else: self.update("\n".join(body))
 
-# %% ../nbs/11_inbox_app.ipynb #91f9de9c
+# %% ../nbs/11_inbox_app.ipynb #45804900
 APP_CSS = """
 Screen { background: $surface; }
 #main-panels { height: 1fr; }
@@ -141,7 +142,7 @@ Screen { background: $surface; }
 StatusPicker, DomainPicker, AreaPicker { align: center middle; }
 """
 
-# %% ../nbs/11_inbox_app.ipynb #0bbee364
+# %% ../nbs/11_inbox_app.ipynb #67f66eda
 class InboxTriageApp(App):
     """Triage the Braincave inbox one note at a time."""
 
@@ -312,9 +313,9 @@ class InboxTriageApp(App):
                          f"run drain_deletes(dry_run=False) to apply")
         self.exit(message=" | ".join(parts))
 
-# %% ../nbs/11_inbox_app.ipynb #0e365659
+# %% ../nbs/11_inbox_app.ipynb #de4b8444
 def main():
-    """CLI entry point for inbox triage."""
+    """CLI entry point for inbox triage, and for draining the delete queue."""
     import argparse
 
     parser = argparse.ArgumentParser(description="Triage the Braincave inbox")
@@ -322,7 +323,32 @@ def main():
                         help="Restrict to one inbox subfolder, e.g. Phone")
     parser.add_argument("--limit", type=int, default=None,
                         help="Stop after N notes — handy for a 15-minute session")
+    parser.add_argument("--drain", action="store_true",
+                        help="Apply queued deletes instead of triaging. Lists them and stops "
+                             "unless --yes is given.")
+    parser.add_argument("--yes", action="store_true",
+                        help="With --drain: actually delete (to OS trash via the obsidian CLI).")
     args = parser.parse_args()
+
+    if args.drain:
+        queued = pending_deletes()
+        if not queued:
+            print("Delete queue is empty.")
+            return
+        print(f"{len(queued)} note(s) queued for delete:")
+        for note in queued: print(f"  {note}")
+        if not args.yes:
+            print()
+            print("Nothing deleted. Re-run with --yes to apply (OS trash, recoverable).")
+            return
+        print()
+        for note, outcome in drain_deletes(dry_run=False):
+            print(f"  {outcome}: {note.name}")
+        remaining = len(pending_deletes())
+        print()
+        print(f"Done. {remaining} still queued." if remaining else "Done. Queue empty.")
+        return
+
     result = InboxTriageApp(folder=args.folder, limit=args.limit).run()
     if result: print(result)
 
