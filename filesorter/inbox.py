@@ -7,10 +7,10 @@ __all__ = ['VAULT', 'INBOX', 'HD_STRUCTURE', 'NOTESTATUS_FILE', 'LEDGER_DIR', 'L
            'INBOX_ORDER', 'EXCLUDED_DOMAINS', 'PREVIEW_KEYS', 'FM_DELIM', 'TODO_TASK', 'WIKILINK', 'HDArea', 'HDDomain',
            'load_hd_domains', 'hd_structure_age_days', 'load_note_statuses', 'Note', 'parse_note', 'note_preview',
            'build_backlink_index', 'backlink_count', 'list_candidates', 'set_frontmatter', 'append_task_line',
-           'log_event', 'queue_delete', 'pending_deletes', 'Action', 'Triage', 'obsidian_relpath', 'obsidian_open',
-           'drain_deletes']
+           'log_event', 'queue_delete', 'pending_deletes', 'hd_precision', 'refines', 'resolve_hd', 'Action', 'Triage',
+           'obsidian_relpath', 'obsidian_open', 'drain_deletes']
 
-# %% ../nbs/10_inbox.ipynb #d1a2d9e5
+# %% ../nbs/10_inbox.ipynb #e5e6c9c8
 import json
 import re
 import subprocess
@@ -18,7 +18,7 @@ from dataclasses import dataclass, field
 from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 
-# %% ../nbs/10_inbox.ipynb #92414f92
+# %% ../nbs/10_inbox.ipynb #f0672e1f
 VAULT = Path.home() / "Obsidian" / "Braincave"
 INBOX = VAULT / "0_Inbox"
 
@@ -51,13 +51,28 @@ PREVIEW_KEYS = ("hd", "note-status", "tags", "source", "created", "author", "url
 FM_DELIM = "---"
 TODO_TASK = "- [ ] Organise this note [15m]"
 
-# %% ../nbs/10_inbox.ipynb #34f32235
+# %% ../nbs/10_inbox.ipynb #90864223
 @dataclass
 class HDArea:
     """A Hopsakee.Decimal area, e.g. `70-79 LLM en Generative AI`."""
     id: str
     name: str
     categories: list[dict] = field(default_factory=list)
+
+    @property
+    def hd_digit(self) -> str:
+        """The area's `hd:` digit — `70-79` → `7`, so the area itself is `d6.7`.
+
+        An area id is a decade range, and its digit is that range with the trailing
+        unit dropped — which is exactly the prefix every category inside it shares
+        (`70-79` holds `70`..`79`). So `d6.7` is simply a truncated `d6.75`: an area
+        needs no syntax of its own, it is a shorter `hd:` value.
+        """
+        start = self.id.split("-")[0]
+        return start[:-1] if len(start) > 1 else start
+
+    @property
+    def label(self) -> str: return f"{self.id} {self.name}"
 
 
 @dataclass
@@ -69,6 +84,10 @@ class HDDomain:
 
     @property
     def label(self) -> str: return f"{self.id} {self.name}"
+
+    def hd(self, area: HDArea | None = None) -> str:
+        """The `hd:` value for this domain, optionally narrowed to one of its areas."""
+        return f"{self.id}.{area.hd_digit}" if area is not None else self.id
 
 
 def load_hd_domains(path: Path = HD_STRUCTURE, exclude: set[str] = EXCLUDED_DOMAINS) -> list[HDDomain]:
@@ -95,7 +114,7 @@ def hd_structure_age_days(path: Path = HD_STRUCTURE) -> float:
     """
     return (datetime.now().timestamp() - Path(path).stat().st_mtime) / 86400
 
-# %% ../nbs/10_inbox.ipynb #bbd5ffd0
+# %% ../nbs/10_inbox.ipynb #7ad216be
 def load_note_statuses(path: Path = NOTESTATUS_FILE) -> list[str]:
     """Read the canonical `note-status` values from the vault, in file order.
 
@@ -109,7 +128,7 @@ def load_note_statuses(path: Path = NOTESTATUS_FILE) -> list[str]:
         out.append(line)
     return out
 
-# %% ../nbs/10_inbox.ipynb #53081755
+# %% ../nbs/10_inbox.ipynb #63d845e2
 @dataclass
 class Note:
     """A parsed note that remembers its exact original lines."""
@@ -151,7 +170,7 @@ def parse_note(path: Path) -> Note:
                 break
     return Note(path=p, lines=lines, fm_start=fm_start, fm_end=fm_end)
 
-# %% ../nbs/10_inbox.ipynb #bf789a99
+# %% ../nbs/10_inbox.ipynb #48317b0a
 def note_preview(note: Note, n: int = 20) -> tuple[list[str], list[str]]:
     """Return `(header, body)` — interesting frontmatter keys, then `n` non-empty body lines.
 
@@ -167,7 +186,7 @@ def note_preview(note: Note, n: int = 20) -> tuple[list[str], list[str]]:
             if len(body) >= n: break
     return header, body
 
-# %% ../nbs/10_inbox.ipynb #d85e3544
+# %% ../nbs/10_inbox.ipynb #5b851f4a
 WIKILINK = re.compile(r"\[\[([^\]|#]+)")
 
 
@@ -206,7 +225,7 @@ def backlink_count(index: dict[str, int], path: Path) -> int:
     """Inbound link count for `path`, from a prebuilt index."""
     return index.get(Path(path).stem, 0)
 
-# %% ../nbs/10_inbox.ipynb #6aa1ea2d
+# %% ../nbs/10_inbox.ipynb #85539c6a
 def list_candidates(inbox: Path = INBOX, order: list[str] = INBOX_ORDER) -> list[Path]:
     """Every inbox note, in Jelle's processing order then alphabetically within a folder."""
     inbox = Path(inbox)
@@ -220,7 +239,7 @@ def list_candidates(inbox: Path = INBOX, order: list[str] = INBOX_ORDER) -> list
 
     return sorted(notes, key=sort_key)
 
-# %% ../nbs/10_inbox.ipynb #5fb7af36
+# %% ../nbs/10_inbox.ipynb #dd7d7818
 def set_frontmatter(path: Path, updates: dict[str, str]) -> None:
     """Set frontmatter keys in place, preserving every other line verbatim.
 
@@ -265,7 +284,7 @@ def append_task_line(path: Path, when: date | None = None, text: str = TODO_TASK
     p.write_text(f"{current}{sep}{line}\n", encoding="utf-8")
     return line
 
-# %% ../nbs/10_inbox.ipynb #29a1a064
+# %% ../nbs/10_inbox.ipynb #08291946
 def _append_jsonl(path: Path, record: dict) -> None:
     Path(path).parent.mkdir(parents=True, exist_ok=True)
     with open(path, "a", encoding="utf-8") as f:
@@ -324,7 +343,35 @@ def pending_deletes() -> list[Path]:
         except (json.JSONDecodeError, KeyError): continue
     return out
 
-# %% ../nbs/10_inbox.ipynb #7e8c7bad
+# %% ../nbs/10_inbox.ipynb #53a2f5fc
+def hd_precision(value: str | None) -> int:
+    """How specific an `hd:` value is: 0 none, 1 domain, 2 area, 3 category, 4+ item.
+
+    `d6` → 1, `d6.7` → 2, `d6.75` → 3, `d6.75.04` → 4. Area and category are both a single
+    dot-part, told apart by digit count, which is exactly why `d6.7` is a prefix of `d6.75`.
+    """
+    if not value: return 0
+    parts = value.strip().split(".")
+    if len(parts) == 1: return 1
+    level = 1 + min(len(parts[1]), 2)
+    return level + (len(parts) - 2)
+
+
+def refines(finer: str | None, coarser: str | None) -> bool:
+    """True when `finer` is a strictly more specific version of the same `hd:` path."""
+    if not finer or not coarser: return False
+    return finer.startswith(coarser) and hd_precision(finer) > hd_precision(coarser)
+
+
+def resolve_hd(existing: str | None, chosen: str) -> tuple[str, str]:
+    """Decide the `hd:` to write. Returns `(value, note)` where note explains a non-write."""
+    if refines(existing, chosen):
+        return existing, f"kept existing {existing} (finer than {chosen})"
+    if existing and existing.strip() and not chosen.startswith(existing.strip()):
+        return chosen, f"replaced {existing.strip()}"
+    return chosen, ""
+
+# %% ../nbs/10_inbox.ipynb #d3a4c609
 @dataclass
 class Action:
     """One applied verdict, with enough state to undo it exactly."""
@@ -349,12 +396,18 @@ class Triage:
         self.counts[action.kind] = self.counts.get(action.kind, 0) + 1
 
     def keep(self, path: Path, status: str, hd: str) -> str:
-        """Record a keeper: Jelle's chosen `note-status` plus the domain he picked."""
+        """Record a keeper: Jelle's chosen `note-status`, plus the `hd:` he narrowed to.
+
+        Never coarsens an `hd:` the note already carries — see `resolve_hd`.
+        """
         before = self._snapshot(path)
-        set_frontmatter(path, {"note-status": status, "hd": hd})
-        log_event("keep", path, note_status=status, hd=hd)
+        existing = parse_note(path).get("hd")
+        value, note = resolve_hd(existing, hd)
+        set_frontmatter(path, {"note-status": status, "hd": value})
+        log_event("keep", path, note_status=status, hd=value, chosen=hd,
+                  existing_hd=existing, kept_existing=bool(note.startswith("kept")))
         self._push(Action(Path(path), "keep", before))
-        return f"{status} · hd: {hd}"
+        return f"{status} · hd: {value}" + (f" · {note}" if note else "")
 
     def delete(self, path: Path) -> str:
         queue_delete(path)
@@ -392,7 +445,7 @@ class Triage:
         if not self.counts: return "nothing triaged"
         return " | ".join(f"{n} {kind}" for kind, n in sorted(self.counts.items()))
 
-# %% ../nbs/10_inbox.ipynb #4f58e285
+# %% ../nbs/10_inbox.ipynb #e3d06190
 def obsidian_relpath(path: Path, vault: Path = VAULT) -> str:
     """Vault-relative path, which is what `obsidian path=` expects."""
     return str(Path(path).resolve().relative_to(Path(vault).resolve()))
