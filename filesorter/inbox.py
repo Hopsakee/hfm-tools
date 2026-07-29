@@ -4,13 +4,14 @@
 
 # %% auto #0
 __all__ = ['VAULT', 'INBOX', 'HD_STRUCTURE', 'NOTESTATUS_FILE', 'LEDGER_DIR', 'LEDGER', 'PENDING_DELETES', 'LEDGER_V',
-           'INBOX_ORDER', 'EXCLUDED_DOMAINS', 'PREVIEW_KEYS', 'FM_DELIM', 'TODO_TASK', 'WIKILINK', 'HDArea', 'HDDomain',
-           'load_hd_domains', 'hd_structure_age_days', 'load_note_statuses', 'Note', 'parse_note', 'note_preview',
-           'build_backlink_index', 'backlink_count', 'list_candidates', 'set_frontmatter', 'append_task_line',
-           'log_event', 'queue_delete', 'pending_deletes', 'hd_precision', 'refines', 'resolve_hd', 'Action', 'Triage',
-           'obsidian_relpath', 'obsidian_open', 'drain_deletes']
+           'INBOX_ORDER', 'EXCLUDED_DOMAINS', 'PREVIEW_KEYS', 'FM_DELIM', 'TODO_TASK', 'WIKILINK', 'DECIDED_EVENTS',
+           'HDArea', 'HDDomain', 'load_hd_domains', 'hd_structure_age_days', 'load_note_statuses', 'Note', 'parse_note',
+           'note_preview', 'build_backlink_index', 'backlink_count', 'list_candidates', 'decided_notes',
+           'pending_candidates', 'set_frontmatter', 'append_task_line', 'log_event', 'queue_delete', 'pending_deletes',
+           'hd_precision', 'refines', 'resolve_hd', 'Action', 'Triage', 'obsidian_relpath', 'obsidian_open',
+           'drain_deletes']
 
-# %% ../nbs/10_inbox.ipynb #947096d6
+# %% ../nbs/10_inbox.ipynb #71b5f1f1
 import json
 import re
 import subprocess
@@ -18,7 +19,7 @@ from dataclasses import dataclass, field
 from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 
-# %% ../nbs/10_inbox.ipynb #51eb8fdf
+# %% ../nbs/10_inbox.ipynb #40a23621
 VAULT = Path.home() / "Obsidian" / "Braincave"
 INBOX = VAULT / "0_Inbox"
 
@@ -51,7 +52,7 @@ PREVIEW_KEYS = ("hd", "note-status", "tags", "source", "created", "author", "url
 FM_DELIM = "---"
 TODO_TASK = "- [ ] Organise this note [15m]"
 
-# %% ../nbs/10_inbox.ipynb #2b145d31
+# %% ../nbs/10_inbox.ipynb #42f804d2
 @dataclass
 class HDArea:
     """A Hopsakee.Decimal area, e.g. `70-79 LLM en Generative AI`."""
@@ -114,7 +115,7 @@ def hd_structure_age_days(path: Path = HD_STRUCTURE) -> float:
     """
     return (datetime.now().timestamp() - Path(path).stat().st_mtime) / 86400
 
-# %% ../nbs/10_inbox.ipynb #aa32ddbc
+# %% ../nbs/10_inbox.ipynb #55c110bc
 def load_note_statuses(path: Path = NOTESTATUS_FILE) -> list[str]:
     """Read the canonical `note-status` values from the vault, in file order.
 
@@ -128,7 +129,7 @@ def load_note_statuses(path: Path = NOTESTATUS_FILE) -> list[str]:
         out.append(line)
     return out
 
-# %% ../nbs/10_inbox.ipynb #5ccc04f6
+# %% ../nbs/10_inbox.ipynb #34458dde
 @dataclass
 class Note:
     """A parsed note that remembers its exact original lines."""
@@ -170,7 +171,7 @@ def parse_note(path: Path) -> Note:
                 break
     return Note(path=p, lines=lines, fm_start=fm_start, fm_end=fm_end)
 
-# %% ../nbs/10_inbox.ipynb #a5bbcc33
+# %% ../nbs/10_inbox.ipynb #0c9c3178
 def note_preview(note: Note, n: int = 20) -> tuple[list[str], list[str]]:
     """Return `(header, body)` — interesting frontmatter keys, then `n` non-empty body lines.
 
@@ -186,7 +187,7 @@ def note_preview(note: Note, n: int = 20) -> tuple[list[str], list[str]]:
             if len(body) >= n: break
     return header, body
 
-# %% ../nbs/10_inbox.ipynb #9897a11f
+# %% ../nbs/10_inbox.ipynb #c430be42
 WIKILINK = re.compile(r"\[\[([^\]|#]+)")
 
 
@@ -225,7 +226,7 @@ def backlink_count(index: dict[str, int], path: Path) -> int:
     """Inbound link count for `path`, from a prebuilt index."""
     return index.get(Path(path).stem, 0)
 
-# %% ../nbs/10_inbox.ipynb #44c5d7a9
+# %% ../nbs/10_inbox.ipynb #1f3a0505
 def list_candidates(inbox: Path = INBOX, order: list[str] = INBOX_ORDER) -> list[Path]:
     """Every inbox note, in Jelle's processing order then alphabetically within a folder."""
     inbox = Path(inbox)
@@ -239,7 +240,40 @@ def list_candidates(inbox: Path = INBOX, order: list[str] = INBOX_ORDER) -> list
 
     return sorted(notes, key=sort_key)
 
-# %% ../nbs/10_inbox.ipynb #44865623
+# %% ../nbs/10_inbox.ipynb #54bb3f7a
+#: Ledger events that mean "this note has a standing verdict".
+DECIDED_EVENTS = {"keep", "delete_queued", "delete_applied", "todo"}
+
+
+def decided_notes(ledger: Path = LEDGER) -> set[Path]:
+    """Notes carrying a standing verdict, replayed in order from the ledger.
+
+    An `undo` clears the note again, so undoing something genuinely puts it back in the queue.
+    """
+    p = Path(ledger)
+    if not p.exists(): return set()
+    decided: set[Path] = set()
+    for line in p.read_text(encoding="utf-8").splitlines():
+        if not line.strip(): continue
+        try: record = json.loads(line)
+        except json.JSONDecodeError: continue
+        note = record.get("note")
+        if not note: continue
+        event = record.get("event_type")
+        if event in DECIDED_EVENTS: decided.add(Path(note))
+        elif event == "undo": decided.discard(Path(note))
+    return decided
+
+
+def pending_candidates(inbox: Path = INBOX, order: list[str] = INBOX_ORDER,
+                       ledger: Path = LEDGER) -> tuple[list[Path], int]:
+    """Inbox notes still awaiting a verdict, and how many are already decided."""
+    decided = decided_notes(ledger)
+    everything = list_candidates(inbox, order)
+    pending = [p for p in everything if p not in decided]
+    return pending, len(everything) - len(pending)
+
+# %% ../nbs/10_inbox.ipynb #bad6c5d4
 def set_frontmatter(path: Path, updates: dict[str, str]) -> None:
     """Set frontmatter keys in place, preserving every other line verbatim.
 
@@ -284,7 +318,7 @@ def append_task_line(path: Path, when: date | None = None, text: str = TODO_TASK
     p.write_text(f"{current}{sep}{line}\n", encoding="utf-8")
     return line
 
-# %% ../nbs/10_inbox.ipynb #df9d5f06
+# %% ../nbs/10_inbox.ipynb #08c0ae66
 def _append_jsonl(path: Path, record: dict) -> None:
     Path(path).parent.mkdir(parents=True, exist_ok=True)
     with open(path, "a", encoding="utf-8") as f:
@@ -343,7 +377,7 @@ def pending_deletes() -> list[Path]:
         except (json.JSONDecodeError, KeyError): continue
     return out
 
-# %% ../nbs/10_inbox.ipynb #01323840
+# %% ../nbs/10_inbox.ipynb #3fdc97ef
 def hd_precision(value: str | None) -> int:
     """How specific an `hd:` value is: 0 none, 1 domain, 2 area, 3 category, 4+ item.
 
@@ -371,7 +405,7 @@ def resolve_hd(existing: str | None, chosen: str) -> tuple[str, str]:
         return chosen, f"replaced {existing.strip()}"
     return chosen, ""
 
-# %% ../nbs/10_inbox.ipynb #c78e56fc
+# %% ../nbs/10_inbox.ipynb #07f694f3
 @dataclass
 class Action:
     """One applied verdict, with enough state to undo it exactly."""
@@ -445,7 +479,7 @@ class Triage:
         if not self.counts: return "nothing triaged"
         return " | ".join(f"{n} {kind}" for kind, n in sorted(self.counts.items()))
 
-# %% ../nbs/10_inbox.ipynb #5912c80f
+# %% ../nbs/10_inbox.ipynb #6ea6a63b
 def obsidian_relpath(path: Path, vault: Path = VAULT) -> str:
     """Vault-relative path, which is what `obsidian path=` expects."""
     return str(Path(path).resolve().relative_to(Path(vault).resolve()))

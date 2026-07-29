@@ -6,7 +6,7 @@
 __all__ = ['DOMAIN_ONLY', 'APP_CSS', 'StatusPicker', 'DomainPicker', 'AreaPicker', 'NoteInfoPanel', 'NotePreviewPanel',
            'InboxTriageApp', 'main']
 
-# %% ../nbs/11_inbox_app.ipynb #98711e76
+# %% ../nbs/11_inbox_app.ipynb #fa49fd28
 from pathlib import Path
 
 from rich.text import Text
@@ -24,7 +24,7 @@ from filesorter.inbox import (
     backlink_count,
     build_backlink_index,
     hd_structure_age_days,
-    list_candidates,
+    pending_candidates,
     load_hd_domains,
     load_note_statuses,
     note_preview,
@@ -34,7 +34,7 @@ from filesorter.inbox import (
     parse_note,
 )
 
-# %% ../nbs/11_inbox_app.ipynb #67e36e10
+# %% ../nbs/11_inbox_app.ipynb #a6fc2b86
 class _KeyedPicker(ModalScreen[str | None]):
     """Modal list where each row has its own shortcut key. Esc cancels."""
 
@@ -96,7 +96,7 @@ class AreaPicker(_KeyedPicker):
 #: Sentinel returned by AreaPicker when Jelle declines to narrow to an area.
 DOMAIN_ONLY = "__domain_only__"
 
-# %% ../nbs/11_inbox_app.ipynb #e874469c
+# %% ../nbs/11_inbox_app.ipynb #7b831c5f
 class NoteInfoPanel(Static):
     """Left panel: which note, where from, how connected."""
 
@@ -129,7 +129,7 @@ class NotePreviewPanel(Static):
         elif not body: self.update(Text("(no body — frontmatter only)", style="dim"))
         else: self.update("\n".join(body))
 
-# %% ../nbs/11_inbox_app.ipynb #45804900
+# %% ../nbs/11_inbox_app.ipynb #30a5ba58
 APP_CSS = """
 Screen { background: $surface; }
 #main-panels { height: 1fr; }
@@ -142,7 +142,7 @@ Screen { background: $surface; }
 StatusPicker, DomainPicker, AreaPicker { align: center middle; }
 """
 
-# %% ../nbs/11_inbox_app.ipynb #67f66eda
+# %% ../nbs/11_inbox_app.ipynb #68387692
 class InboxTriageApp(App):
     """Triage the Braincave inbox one note at a time."""
 
@@ -168,6 +168,8 @@ class InboxTriageApp(App):
         self.backlinks: dict[str, int] = {}
         self.notes: list[Path] = []
         self.index = 0
+        self.already_decided = 0
+        self.pending_in_scope = 0
 
     # ---- lifecycle -------------------------------------------------------
 
@@ -180,14 +182,21 @@ class InboxTriageApp(App):
         age = hd_structure_age_days()
         if age > 14:
             self._status(f"⚠ hd-structure.json is {age:.0f} days old — run _HD BuildCache")
-        elif (queued := len(pending_deletes())):
-            self._status(f"{queued} note(s) already queued for delete — review before draining")
+        else:
+            parts = [f"{self.pending_in_scope} still to do in this selection"]
+            if self.already_decided:
+                parts.append(f"{self.already_decided} already decided — you will not see those again")
+            if (queued := len(pending_deletes())):
+                parts.append(f"{queued} queued for delete (--drain to apply)")
+            self._status(" · ".join(parts))
 
     def _reload_notes(self) -> None:
-        notes = list_candidates()
+        """Load only notes without a standing verdict, so a short session resumes cleanly."""
+        notes, self.already_decided = pending_candidates()
         if self.folder:
             wanted = self.folder.lower()
             notes = [p for p in notes if p.relative_to(INBOX).parts[0].lower() == wanted]
+        self.pending_in_scope = len(notes)
         self.notes = notes[:self.limit] if self.limit else notes
 
     @property
@@ -201,7 +210,9 @@ class InboxTriageApp(App):
         if path is None:
             info.update_note(None, self.index, len(self.notes), 0, [])
             preview.update_preview(None)
-            self._status(f"Done — {self.triage.summary()}")
+            done = self.triage.summary()
+            left = max(0, self.pending_in_scope - len(self.notes))
+            self._status(f"Batch done — {done}" + (f" · {left} still waiting in this folder" if left else ""))
             return
         header, body = note_preview(parse_note(path))
         info.update_note(path, self.index, len(self.notes), backlink_count(self.backlinks, path), header)
@@ -308,12 +319,14 @@ class InboxTriageApp(App):
     def action_quit_app(self) -> None:
         """Quit, always reporting the delete queue so nothing accumulates unseen."""
         parts = [self.triage.summary()]
+        left = max(0, self.pending_in_scope - (self.index if self.index <= len(self.notes) else len(self.notes)))
+        if left: parts.append(f"{left} note(s) still to do — just run it again")
         if (queued := len(pending_deletes())):
             parts.append(f"{queued} note(s) queued for delete — nothing removed yet; "
                          f"run drain_deletes(dry_run=False) to apply")
         self.exit(message=" | ".join(parts))
 
-# %% ../nbs/11_inbox_app.ipynb #de4b8444
+# %% ../nbs/11_inbox_app.ipynb #64badeff
 def main():
     """CLI entry point for inbox triage, and for draining the delete queue."""
     import argparse
