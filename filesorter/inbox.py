@@ -4,14 +4,15 @@
 
 # %% auto #0
 __all__ = ['VAULT', 'INBOX', 'HD_STRUCTURE', 'NOTESTATUS_FILE', 'LEDGER_DIR', 'LEDGER', 'PENDING_DELETES', 'LEDGER_V',
-           'INBOX_ORDER', 'EXCLUDED_DOMAINS', 'PREVIEW_KEYS', 'FM_DELIM', 'TODO_TASK', 'WIKILINK', 'DECIDED_EVENTS',
-           'HDArea', 'HDDomain', 'load_hd_domains', 'hd_structure_age_days', 'load_note_statuses', 'load_hd_folders',
-           'hd_to_folder', 'Note', 'parse_note', 'note_preview', 'build_backlink_index', 'backlink_count',
-           'list_candidates', 'decided_notes', 'pending_candidates', 'set_frontmatter', 'append_task_line', 'log_event',
+           'INBOX_ORDER', 'EXCLUDED_DOMAINS', 'PREVIEW_KEYS', 'FM_DELIM', 'TODO_TASK', 'WIKILINK', 'COMPLETE_HD',
+           'DECIDED_EVENTS', 'HDArea', 'HDDomain', 'load_hd_domains', 'hd_structure_age_days', 'load_note_statuses',
+           'load_hd_folders', 'hd_to_folder', 'Note', 'parse_note', 'note_preview', 'build_backlink_index',
+           'backlink_count', 'list_candidates', 'is_complete_hd', 'next_item_id', 'complete_hd', 'needs_proposal',
+           'ready_to_file', 'decided_notes', 'pending_candidates', 'set_frontmatter', 'append_task_line', 'log_event',
            'queue_delete', 'pending_deletes', 'hd_precision', 'refines', 'resolve_hd', 'Action', 'Triage',
            'obsidian_relpath', 'obsidian_open', 'drain_deletes']
 
-# %% ../nbs/10_inbox.ipynb #13f5b312
+# %% ../nbs/10_inbox.ipynb #5e9f2c6c
 import json
 import re
 import subprocess
@@ -19,7 +20,7 @@ from dataclasses import dataclass, field
 from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 
-# %% ../nbs/10_inbox.ipynb #8f0da7ea
+# %% ../nbs/10_inbox.ipynb #5fecdcc3
 VAULT = Path.home() / "Obsidian" / "Braincave"
 INBOX = VAULT / "0_Inbox"
 
@@ -52,7 +53,7 @@ PREVIEW_KEYS = ("hd", "note-status", "tags", "source", "created", "author", "url
 FM_DELIM = "---"
 TODO_TASK = "- [ ] Organise this note [15m]"
 
-# %% ../nbs/10_inbox.ipynb #97030cb5
+# %% ../nbs/10_inbox.ipynb #eab90ae4
 @dataclass
 class HDArea:
     """A Hopsakee.Decimal area, e.g. `70-79 LLM en Generative AI`."""
@@ -115,7 +116,7 @@ def hd_structure_age_days(path: Path = HD_STRUCTURE) -> float:
     """
     return (datetime.now().timestamp() - Path(path).stat().st_mtime) / 86400
 
-# %% ../nbs/10_inbox.ipynb #e2b5f106
+# %% ../nbs/10_inbox.ipynb #506907d9
 def load_note_statuses(path: Path = NOTESTATUS_FILE) -> list[str]:
     """Read the canonical `note-status` values from the vault, in file order.
 
@@ -129,7 +130,7 @@ def load_note_statuses(path: Path = NOTESTATUS_FILE) -> list[str]:
         out.append(line)
     return out
 
-# %% ../nbs/10_inbox.ipynb #a927535a
+# %% ../nbs/10_inbox.ipynb #c9226fbe
 def load_hd_folders(path: Path = HD_STRUCTURE) -> dict[str, Path]:
     """Map every `hd:` value to its vault-relative folder, at all precisions.
 
@@ -186,7 +187,7 @@ def hd_to_folder(hd: str, folders: dict[str, Path] | None = None,
         if area_key in folders: return vault / folders[area_key]
     return None
 
-# %% ../nbs/10_inbox.ipynb #6bc32ff3
+# %% ../nbs/10_inbox.ipynb #ea2730ab
 @dataclass
 class Note:
     """A parsed note that remembers its exact original lines."""
@@ -228,7 +229,7 @@ def parse_note(path: Path) -> Note:
                 break
     return Note(path=p, lines=lines, fm_start=fm_start, fm_end=fm_end)
 
-# %% ../nbs/10_inbox.ipynb #b581136a
+# %% ../nbs/10_inbox.ipynb #3fcbf17e
 def note_preview(note: Note, n: int = 20) -> tuple[list[str], list[str]]:
     """Return `(header, body)` — interesting frontmatter keys, then `n` non-empty body lines.
 
@@ -244,7 +245,7 @@ def note_preview(note: Note, n: int = 20) -> tuple[list[str], list[str]]:
             if len(body) >= n: break
     return header, body
 
-# %% ../nbs/10_inbox.ipynb #ce806d79
+# %% ../nbs/10_inbox.ipynb #e00f2aac
 WIKILINK = re.compile(r"\[\[([^\]|#]+)")
 
 
@@ -283,7 +284,7 @@ def backlink_count(index: dict[str, int], path: Path) -> int:
     """Inbound link count for `path`, from a prebuilt index."""
     return index.get(Path(path).stem, 0)
 
-# %% ../nbs/10_inbox.ipynb #f9b4cab8
+# %% ../nbs/10_inbox.ipynb #db529b3b
 def list_candidates(inbox: Path = INBOX, order: list[str] = INBOX_ORDER) -> list[Path]:
     """Every inbox note, in Jelle's processing order then alphabetically within a folder."""
     inbox = Path(inbox)
@@ -297,7 +298,64 @@ def list_candidates(inbox: Path = INBOX, order: list[str] = INBOX_ORDER) -> list
 
     return sorted(notes, key=sort_key)
 
-# %% ../nbs/10_inbox.ipynb #5d00dee1
+# %% ../nbs/10_inbox.ipynb #9a026b55
+#: A complete Hopsakee Decimal: domain, two-digit category, item id. The area lives in the
+#: category's first digit, so a complete number has three parts — `d1.53.12`.
+COMPLETE_HD = re.compile(r"^d\d+\.\d{2}\.\d+$")
+
+
+def is_complete_hd(hd: str | None) -> bool:
+    """True only for a full `domain.category.id` — the one form allowed to leave the inbox."""
+    return bool(hd and COMPLETE_HD.match(hd.strip()))
+
+
+def next_item_id(hd_category: str, path: Path = HD_STRUCTURE) -> str | None:
+    """Next free item id in a category, from the nightly `max_hd_id`, zero-padded to two.
+
+    Ids are not contiguous, so the next free one is `max_hd_id + 1` rather than a count.
+    """
+    parts = hd_category.strip().split(".")
+    if len(parts) < 2: return None
+    domain_id, category_id = parts[0], parts[1]
+    data = json.loads(Path(path).read_text(encoding="utf-8"))
+    for domain in data.get("domains", []) or []:
+        if (domain.get("id") or "") != domain_id: continue
+        for area in domain.get("areas", []) or []:
+            for cat in area.get("categories", []) or []:
+                if str(cat.get("id")) == category_id:
+                    return f"{int(cat.get('max_hd_id') or 0) + 1:02d}"
+    return None
+
+
+def complete_hd(hd_category: str, path: Path = HD_STRUCTURE) -> str | None:
+    """Turn a category-level value into a complete one: `d1.53` → `d1.53.97`."""
+    item = next_item_id(hd_category, path)
+    if item is None: return None
+    candidate = f"{hd_category.strip()}.{item}"
+    return candidate if is_complete_hd(candidate) else None
+
+
+def needs_proposal(inbox: Path = INBOX, order: list[str] = INBOX_ORDER,
+                   ledger: Path = LEDGER) -> list[tuple[Path, str]]:
+    """Kept notes whose `hd:` is still partial — the nightly proposer's input queue."""
+    decided = decided_notes(ledger)
+    out = []
+    for note_path in list_candidates(inbox, order):
+        if note_path not in decided: continue
+        hd = parse_note(note_path).get("hd")
+        if hd and not is_complete_hd(hd): out.append((note_path, hd.strip()))
+    return out
+
+
+def ready_to_file(inbox: Path = INBOX, order: list[str] = INBOX_ORDER) -> list[tuple[Path, str]]:
+    """Inbox notes carrying a complete `hd:` — the only notes the mover may ever touch."""
+    out = []
+    for note_path in list_candidates(inbox, order):
+        hd = parse_note(note_path).get("hd")
+        if is_complete_hd(hd): out.append((note_path, hd.strip()))
+    return out
+
+# %% ../nbs/10_inbox.ipynb #2f1a90e0
 #: Ledger events that mean "this note has a standing verdict".
 DECIDED_EVENTS = {"keep", "delete_queued", "delete_applied", "todo"}
 
@@ -330,7 +388,7 @@ def pending_candidates(inbox: Path = INBOX, order: list[str] = INBOX_ORDER,
     pending = [p for p in everything if p not in decided]
     return pending, len(everything) - len(pending)
 
-# %% ../nbs/10_inbox.ipynb #68814f99
+# %% ../nbs/10_inbox.ipynb #78715912
 def set_frontmatter(path: Path, updates: dict[str, str]) -> None:
     """Set frontmatter keys in place, preserving every other line verbatim.
 
@@ -375,7 +433,7 @@ def append_task_line(path: Path, when: date | None = None, text: str = TODO_TASK
     p.write_text(f"{current}{sep}{line}\n", encoding="utf-8")
     return line
 
-# %% ../nbs/10_inbox.ipynb #018cd45e
+# %% ../nbs/10_inbox.ipynb #70ad8ad8
 def _append_jsonl(path: Path, record: dict) -> None:
     Path(path).parent.mkdir(parents=True, exist_ok=True)
     with open(path, "a", encoding="utf-8") as f:
@@ -434,7 +492,7 @@ def pending_deletes() -> list[Path]:
         except (json.JSONDecodeError, KeyError): continue
     return out
 
-# %% ../nbs/10_inbox.ipynb #9081d43f
+# %% ../nbs/10_inbox.ipynb #f8a3db17
 def hd_precision(value: str | None) -> int:
     """How specific an `hd:` value is: 0 none, 1 domain, 2 area, 3 category, 4+ item.
 
@@ -462,7 +520,7 @@ def resolve_hd(existing: str | None, chosen: str) -> tuple[str, str]:
         return chosen, f"replaced {existing.strip()}"
     return chosen, ""
 
-# %% ../nbs/10_inbox.ipynb #752ac6c8
+# %% ../nbs/10_inbox.ipynb #6c9db94b
 @dataclass
 class Action:
     """One applied verdict, with enough state to undo it exactly."""
@@ -536,7 +594,7 @@ class Triage:
         if not self.counts: return "nothing triaged"
         return " | ".join(f"{n} {kind}" for kind, n in sorted(self.counts.items()))
 
-# %% ../nbs/10_inbox.ipynb #ff21390f
+# %% ../nbs/10_inbox.ipynb #f28c7e10
 def obsidian_relpath(path: Path, vault: Path = VAULT) -> str:
     """Vault-relative path, which is what `obsidian path=` expects."""
     return str(Path(path).resolve().relative_to(Path(vault).resolve()))
