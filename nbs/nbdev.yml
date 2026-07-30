@@ -1,0 +1,9 @@
+project:
+  output-dir: _docs
+
+website:
+  title: "filesorter"
+  site-url: "/"
+  description: "Keyboard-driven TUI file sorter with Johnny Decimal support"
+  repo-branch: main
+  repo-url: ""

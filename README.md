@@ -52,6 +52,25 @@ uv run python -m filesorter.inbox_app --drain --yes
 
 Leave off `--folder` to work the whole inbox in priority order: Phone, Hoggle, NewNotes, Notes, Readwise, Snipd, Atlas, Sources, Omnivore, zz_NoteStationDumb.
 
+## Quick commands
+
+`inbox` is on your PATH (a symlink to `inbox.sh` in this repo), so these work from anywhere:
+
+```bash
+inbox                 # triage the whole inbox, in priority order
+inbox phone 20        # triage one source folder, stop after 20
+inbox pick            # choose from the proposals the nightly wrote
+inbox file            # list what is ready to move — moves nothing
+inbox file yes        # actually move it
+inbox drain           # list notes queued for deletion
+inbox drain yes       # actually delete them (OS trash, recoverable)
+inbox status          # counts for all three queues
+inbox help
+```
+
+Anything that changes the vault needs the literal word `yes`. `tmux_sort.sh` is the
+equivalent launcher for the Downloads FileSorter.
+
 ## Triage keys
 
 | Key | What it does |
