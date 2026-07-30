@@ -104,6 +104,7 @@ d = { 'settings': {'branch': 'main', 'doc_baseurl': '/', 'doc_host': '', 'git_ur
                                   'filesorter.inbox.complete_hd': ('inbox.html#complete_hd', 'filesorter/inbox.py'),
                                   'filesorter.inbox.decided_notes': ('inbox.html#decided_notes', 'filesorter/inbox.py'),
                                   'filesorter.inbox.drain_deletes': ('inbox.html#drain_deletes', 'filesorter/inbox.py'),
+                                  'filesorter.inbox.duplicate_groups': ('inbox.html#duplicate_groups', 'filesorter/inbox.py'),
                                   'filesorter.inbox.file_note': ('inbox.html#file_note', 'filesorter/inbox.py'),
                                   'filesorter.inbox.group_folder_name': ('inbox.html#group_folder_name', 'filesorter/inbox.py'),
                                   'filesorter.inbox.group_label': ('inbox.html#group_label', 'filesorter/inbox.py'),
