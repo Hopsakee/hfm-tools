@@ -5,15 +5,16 @@
 # %% auto #0
 __all__ = ['VAULT', 'INBOX', 'HD_STRUCTURE', 'NOTESTATUS_FILE', 'LEDGER_DIR', 'LEDGER', 'PENDING_DELETES', 'LEDGER_V',
            'INBOX_ORDER', 'EXCLUDED_DOMAINS', 'PREVIEW_KEYS', 'FM_DELIM', 'TODO_TASK', 'WIKILINK', 'COMPLETE_HD',
-           'DECIDED_EVENTS', 'HDArea', 'HDDomain', 'load_hd_domains', 'hd_structure_age_days', 'load_note_statuses',
-           'load_hd_folders', 'category_groups', 'mislabelled_groups', 'group_label', 'hd_to_folder', 'Note',
-           'parse_note', 'note_preview', 'build_backlink_index', 'backlink_count', 'list_candidates', 'is_complete_hd',
-           'next_item_id', 'complete_hd', 'needs_proposal', 'ready_to_file', 'decided_notes', 'pending_candidates',
-           'set_frontmatter', 'append_task_line', 'log_event', 'queue_delete', 'pending_deletes', 'hd_precision',
-           'refines', 'resolve_hd', 'Action', 'Triage', 'obsidian_relpath', 'obsidian_open', 'drain_deletes',
-           'group_folder_name', 'FilePlan', 'id_carrying_notes', 'plan_filing']
+           'DECIDED_EVENTS', 'PROPOSAL_RE', 'BLOCK_START', 'BLOCK_END', 'BLOCK_RE', 'HDArea', 'HDDomain',
+           'load_hd_domains', 'hd_structure_age_days', 'load_note_statuses', 'load_hd_folders', 'category_groups',
+           'mislabelled_groups', 'group_label', 'hd_to_folder', 'Note', 'parse_note', 'note_preview',
+           'build_backlink_index', 'backlink_count', 'list_candidates', 'is_complete_hd', 'next_item_id', 'complete_hd',
+           'needs_proposal', 'ready_to_file', 'decided_notes', 'pending_candidates', 'set_frontmatter',
+           'append_task_line', 'log_event', 'queue_delete', 'pending_deletes', 'hd_precision', 'refines', 'resolve_hd',
+           'Action', 'Triage', 'obsidian_relpath', 'obsidian_open', 'drain_deletes', 'group_folder_name', 'FilePlan',
+           'id_carrying_notes', 'plan_filing', 'parse_proposals', 'notes_with_proposals', 'apply_pick', 'file_note']
 
-# %% ../nbs/10_inbox.ipynb #b0118a13
+# %% ../nbs/10_inbox.ipynb #33275595
 import json
 import re
 import subprocess
@@ -21,7 +22,7 @@ from dataclasses import dataclass, field
 from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 
-# %% ../nbs/10_inbox.ipynb #fb25d183
+# %% ../nbs/10_inbox.ipynb #a8a89e04
 VAULT = Path.home() / "Obsidian" / "Braincave"
 INBOX = VAULT / "0_Inbox"
 
@@ -54,7 +55,7 @@ PREVIEW_KEYS = ("hd", "note-status", "tags", "source", "created", "author", "url
 FM_DELIM = "---"
 TODO_TASK = "- [ ] Organise this note [15m]"
 
-# %% ../nbs/10_inbox.ipynb #903b0a76
+# %% ../nbs/10_inbox.ipynb #7992e937
 @dataclass
 class HDArea:
     """A Hopsakee.Decimal area, e.g. `70-79 LLM en Generative AI`."""
@@ -117,7 +118,7 @@ def hd_structure_age_days(path: Path = HD_STRUCTURE) -> float:
     """
     return (datetime.now().timestamp() - Path(path).stat().st_mtime) / 86400
 
-# %% ../nbs/10_inbox.ipynb #c80c7d71
+# %% ../nbs/10_inbox.ipynb #3f827820
 def load_note_statuses(path: Path = NOTESTATUS_FILE) -> list[str]:
     """Read the canonical `note-status` values from the vault, in file order.
 
@@ -131,7 +132,7 @@ def load_note_statuses(path: Path = NOTESTATUS_FILE) -> list[str]:
         out.append(line)
     return out
 
-# %% ../nbs/10_inbox.ipynb #d80cb982
+# %% ../nbs/10_inbox.ipynb #01c46cc5
 def load_hd_folders(path: Path = HD_STRUCTURE) -> dict[str, Path]:
     """Map every `hd:` value to its vault-relative folder, at all precisions.
 
@@ -236,7 +237,7 @@ def hd_to_folder(hd: str, folders=None, vault: Path = VAULT) -> Path | None:
         return category_groups(category, folders, vault).get(value)
     return _resolve_structural(value, folders, vault)
 
-# %% ../nbs/10_inbox.ipynb #db0cc3dd
+# %% ../nbs/10_inbox.ipynb #01ce2edc
 @dataclass
 class Note:
     """A parsed note that remembers its exact original lines."""
@@ -278,7 +279,7 @@ def parse_note(path: Path) -> Note:
                 break
     return Note(path=p, lines=lines, fm_start=fm_start, fm_end=fm_end)
 
-# %% ../nbs/10_inbox.ipynb #390d1a4b
+# %% ../nbs/10_inbox.ipynb #be7cd06f
 def note_preview(note: Note, n: int = 20) -> tuple[list[str], list[str]]:
     """Return `(header, body)` — interesting frontmatter keys, then `n` non-empty body lines.
 
@@ -294,7 +295,7 @@ def note_preview(note: Note, n: int = 20) -> tuple[list[str], list[str]]:
             if len(body) >= n: break
     return header, body
 
-# %% ../nbs/10_inbox.ipynb #f3dfb878
+# %% ../nbs/10_inbox.ipynb #9d0c8095
 WIKILINK = re.compile(r"\[\[([^\]|#]+)")
 
 
@@ -333,7 +334,7 @@ def backlink_count(index: dict[str, int], path: Path) -> int:
     """Inbound link count for `path`, from a prebuilt index."""
     return index.get(Path(path).stem, 0)
 
-# %% ../nbs/10_inbox.ipynb #5871f686
+# %% ../nbs/10_inbox.ipynb #8bf99ebb
 def list_candidates(inbox: Path = INBOX, order: list[str] = INBOX_ORDER) -> list[Path]:
     """Every inbox note, in Jelle's processing order then alphabetically within a folder."""
     inbox = Path(inbox)
@@ -347,7 +348,7 @@ def list_candidates(inbox: Path = INBOX, order: list[str] = INBOX_ORDER) -> list
 
     return sorted(notes, key=sort_key)
 
-# %% ../nbs/10_inbox.ipynb #58526714
+# %% ../nbs/10_inbox.ipynb #1fb873a9
 #: A complete Hopsakee Decimal: domain, two-digit category, item id. The area lives in the
 #: category's first digit, so a complete number has three parts — `d1.53.12`.
 COMPLETE_HD = re.compile(r"^d\d+\.\d{2}\.\d+$")
@@ -404,7 +405,7 @@ def ready_to_file(inbox: Path = INBOX, order: list[str] = INBOX_ORDER) -> list[t
         if is_complete_hd(hd): out.append((note_path, hd.strip()))
     return out
 
-# %% ../nbs/10_inbox.ipynb #a6d3b913
+# %% ../nbs/10_inbox.ipynb #40182c60
 #: Ledger events that mean "this note has a standing verdict".
 DECIDED_EVENTS = {"keep", "delete_queued", "delete_applied", "todo"}
 
@@ -437,7 +438,7 @@ def pending_candidates(inbox: Path = INBOX, order: list[str] = INBOX_ORDER,
     pending = [p for p in everything if p not in decided]
     return pending, len(everything) - len(pending)
 
-# %% ../nbs/10_inbox.ipynb #e7ad09fa
+# %% ../nbs/10_inbox.ipynb #c2045d16
 def set_frontmatter(path: Path, updates: dict[str, str]) -> None:
     """Set frontmatter keys in place, preserving every other line verbatim.
 
@@ -482,7 +483,7 @@ def append_task_line(path: Path, when: date | None = None, text: str = TODO_TASK
     p.write_text(f"{current}{sep}{line}\n", encoding="utf-8")
     return line
 
-# %% ../nbs/10_inbox.ipynb #82e91e35
+# %% ../nbs/10_inbox.ipynb #92c200af
 def _append_jsonl(path: Path, record: dict) -> None:
     Path(path).parent.mkdir(parents=True, exist_ok=True)
     with open(path, "a", encoding="utf-8") as f:
@@ -541,7 +542,7 @@ def pending_deletes() -> list[Path]:
         except (json.JSONDecodeError, KeyError): continue
     return out
 
-# %% ../nbs/10_inbox.ipynb #d81a8ee1
+# %% ../nbs/10_inbox.ipynb #94886549
 def hd_precision(value: str | None) -> int:
     """How specific an `hd:` value is: 0 none, 1 domain, 2 area, 3 category, 4+ item.
 
@@ -569,7 +570,7 @@ def resolve_hd(existing: str | None, chosen: str) -> tuple[str, str]:
         return chosen, f"replaced {existing.strip()}"
     return chosen, ""
 
-# %% ../nbs/10_inbox.ipynb #5fa70433
+# %% ../nbs/10_inbox.ipynb #9aa6888f
 @dataclass
 class Action:
     """One applied verdict, with enough state to undo it exactly."""
@@ -643,7 +644,7 @@ class Triage:
         if not self.counts: return "nothing triaged"
         return " | ".join(f"{n} {kind}" for kind, n in sorted(self.counts.items()))
 
-# %% ../nbs/10_inbox.ipynb #8ef9d84f
+# %% ../nbs/10_inbox.ipynb #6a07ff77
 def obsidian_relpath(path: Path, vault: Path = VAULT) -> str:
     """Vault-relative path, which is what `obsidian path=` expects."""
     return str(Path(path).resolve().relative_to(Path(vault).resolve()))
@@ -689,7 +690,7 @@ def drain_deletes(dry_run: bool = True, vault_name: str = "Braincave") -> list[t
         for note in failed: queue_delete(note)
     return results
 
-# %% ../nbs/10_inbox.ipynb #e75ef48a
+# %% ../nbs/10_inbox.ipynb #fa7fc669
 def group_folder_name(label: str, hd: str) -> str:
     """Name for a new id-group folder. Always an underscore before the number."""
     return f"{label.strip()}_{hd.strip()}"
@@ -747,3 +748,76 @@ def plan_filing(note: Path, hd: str, folders: dict[str, Path] | None = None,
                         reason=f"id {hd} is currently the single note {anchor.name!r}")
     return FilePlan(note, hd, "needs_label",
                     reason=f"id {hd} is new — a group folder needs a label")
+
+# %% ../nbs/10_inbox.ipynb #7bb0efab
+#: A candidate line inside the proposal block: `- **d1.44.03** — Category · group`
+PROPOSAL_RE = re.compile(r"^- \*\*(d\d+\.\d{2}\.\d+)\*\* — (.*)$", re.M)
+BLOCK_START = "<!-- hoggle-hd-voorstel:start -->"
+BLOCK_END = "<!-- hoggle-hd-voorstel:end -->"
+BLOCK_RE = re.compile(re.escape(BLOCK_START) + r".*?" + re.escape(BLOCK_END), re.DOTALL)
+
+
+def parse_proposals(path: Path) -> list[tuple[str, str]]:
+    """`(hd, description)` candidates from a note's proposal block, in the order written."""
+    text = Path(path).read_text(encoding="utf-8", errors="replace")
+    match = BLOCK_RE.search(text)
+    if not match: return []
+    return [(hd, rest.strip()) for hd, rest in PROPOSAL_RE.findall(match.group(0))]
+
+
+def notes_with_proposals(inbox: Path = INBOX, order: list[str] = INBOX_ORDER) -> list[Path]:
+    """Inbox notes carrying a proposal block — stage 3's queue."""
+    return [p for p in list_candidates(inbox, order)
+            if BLOCK_START in p.read_text(encoding="utf-8", errors="replace")]
+
+
+def apply_pick(path: Path, hd: str) -> str:
+    """Promote a chosen candidate into `hd:` and drop the proposal block.
+
+    Both edits are in place at an existing path, so no wikilink is at risk.
+    """
+    if not is_complete_hd(hd): raise ValueError(f"{hd!r} is not a complete number")
+    set_frontmatter(path, {"hd": hd})
+    text = Path(path).read_text(encoding="utf-8", errors="replace")
+    Path(path).write_text(BLOCK_RE.sub("", text).rstrip() + "\n", encoding="utf-8")
+    log_event("pick", path, hd=hd, proposed=[c for c, _ in parse_proposals(path)])
+    return hd
+
+# %% ../nbs/10_inbox.ipynb #88702090
+def _obsidian(*args: str, vault_name: str = "Braincave") -> subprocess.CompletedProcess:
+    return subprocess.run(["obsidian", *args, f"vault={vault_name}"],
+                          capture_output=True, text=True,
+                          stdin=subprocess.DEVNULL, timeout=60)
+
+
+def _move(src: Path, dest_dir: Path, vault: Path = VAULT) -> tuple[bool, str]:
+    """Move one file into `dest_dir`, then confirm it is really there."""
+    dest = dest_dir / src.name
+    if dest.exists(): return False, f"target exists: {dest.name}"
+    res = _obsidian("move", f"path={src.relative_to(vault)}", f"to={dest.relative_to(vault)}")
+    if not dest.exists() or src.exists():
+        detail = (res.stderr or res.stdout or "").strip()[:80]
+        return False, f"move did not take effect{': ' + detail if detail else ''}"
+    return True, str(dest.relative_to(vault))
+
+
+def file_note(plan: "FilePlan", vault: Path = VAULT, dry_run: bool = True) -> tuple[bool, str]:
+    """Execute one filing plan. Returns `(moved, detail)`.
+
+    `into_group` moves the note into an existing group folder. `promote_note` first turns the
+    lone anchor note into a folder named after itself — Jelle's rule — then moves both in.
+    Anything needing a label, or pointing at a category the structure does not have, is refused.
+    """
+    if not plan.ready: return False, plan.reason or plan.kind
+    if plan.kind == "into_group":
+        if dry_run: return True, f"would move into {plan.destination.name}"
+        return _move(plan.note, plan.destination, vault)
+
+    # promote_note: the id currently exists only as a single note.
+    anchor, folder = plan.promote, plan.destination
+    if dry_run:
+        return True, f"would create {folder.name}/ and move {anchor.name} + this note in"
+    folder.mkdir(parents=True, exist_ok=True)
+    ok, detail = _move(anchor, folder, vault)
+    if not ok: return False, f"promoting {anchor.name} failed: {detail}"
+    return _move(plan.note, folder, vault)

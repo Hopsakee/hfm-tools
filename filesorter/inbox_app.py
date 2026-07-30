@@ -6,7 +6,7 @@
 __all__ = ['DOMAIN_ONLY', 'APP_CSS', 'StatusPicker', 'DomainPicker', 'AreaPicker', 'NoteInfoPanel', 'NotePreviewPanel',
            'InboxTriageApp', 'main']
 
-# %% ../nbs/11_inbox_app.ipynb #2c2c8c28
+# %% ../nbs/11_inbox_app.ipynb #c14d17cb
 from pathlib import Path
 
 from rich.text import Text
@@ -25,6 +25,13 @@ from filesorter.inbox import (
     build_backlink_index,
     hd_structure_age_days,
     pending_candidates,
+    apply_pick,
+    file_note,
+    load_hd_folders,
+    notes_with_proposals,
+    parse_proposals,
+    plan_filing,
+    ready_to_file,
     load_hd_domains,
     load_note_statuses,
     note_preview,
@@ -34,7 +41,7 @@ from filesorter.inbox import (
     parse_note,
 )
 
-# %% ../nbs/11_inbox_app.ipynb #e909fca1
+# %% ../nbs/11_inbox_app.ipynb #578a78df
 class _KeyedPicker(ModalScreen[str | None]):
     """Modal list where each row has its own shortcut key. Esc cancels."""
 
@@ -96,7 +103,7 @@ class AreaPicker(_KeyedPicker):
 #: Sentinel returned by AreaPicker when Jelle declines to narrow to an area.
 DOMAIN_ONLY = "__domain_only__"
 
-# %% ../nbs/11_inbox_app.ipynb #a9b66a26
+# %% ../nbs/11_inbox_app.ipynb #8025cf11
 class NoteInfoPanel(Static):
     """Left panel: which note, where from, how connected."""
 
@@ -129,7 +136,7 @@ class NotePreviewPanel(Static):
         elif not body: self.update(Text("(no body — frontmatter only)", style="dim"))
         else: self.update("\n".join(body))
 
-# %% ../nbs/11_inbox_app.ipynb #42246a1b
+# %% ../nbs/11_inbox_app.ipynb #5c74a2e1
 APP_CSS = """
 Screen { background: $surface; }
 #main-panels { height: 1fr; }
@@ -142,7 +149,7 @@ Screen { background: $surface; }
 StatusPicker, DomainPicker, AreaPicker { align: center middle; }
 """
 
-# %% ../nbs/11_inbox_app.ipynb #b29caec7
+# %% ../nbs/11_inbox_app.ipynb #a5e2337c
 class InboxTriageApp(App):
     """Triage the Braincave inbox one note at a time."""
 
@@ -158,10 +165,13 @@ class InboxTriageApp(App):
         Binding("q", "quit_app", "Quit"),
     ]
 
-    def __init__(self, folder: str | None = None, limit: int | None = None):
+    def __init__(self, folder: str | None = None, limit: int | None = None,
+                 mode: str = "triage"):
         super().__init__()
         self.folder = folder
         self.limit = limit
+        self.mode = mode          # "triage" (stage 1) or "pick" (stage 3)
+        self.proposals: list[tuple[str, str]] = []
         self.triage = Triage()
         self.statuses: list[str] = []
         self.domains: list[HDDomain] = []
@@ -192,6 +202,11 @@ class InboxTriageApp(App):
 
     def _reload_notes(self) -> None:
         """Load only notes without a standing verdict, so a short session resumes cleanly."""
+        if self.mode == "pick":
+            notes, self.already_decided = notes_with_proposals(), 0
+            self.pending_in_scope = len(notes)
+            self.notes = notes[:self.limit] if self.limit else notes
+            return
         notes, self.already_decided = pending_candidates()
         if self.folder:
             wanted = self.folder.lower()
@@ -215,6 +230,10 @@ class InboxTriageApp(App):
             self._status(f"Batch done — {done}" + (f" · {left} still waiting in this folder" if left else ""))
             return
         header, body = note_preview(parse_note(path))
+        if self.mode == "pick":
+            self.proposals = parse_proposals(path)
+            header = [f"{i + 1}  {hd}  {desc[:52]}"
+                      for i, (hd, desc) in enumerate(self.proposals)] or ["(no candidates found)"]
         info.update_note(path, self.index, len(self.notes), backlink_count(self.backlinks, path), header)
         preview.update_preview(body)
         self.sub_title = str(path.parent)
@@ -316,6 +335,17 @@ class InboxTriageApp(App):
         except Exception as e:
             self._status(f"⚠ could not open: {e}")
 
+    def on_key(self, event) -> None:
+        """In pick mode 1-3 choose a candidate. Triage mode ignores digits."""
+        if self.mode != "pick" or not event.key.isdigit() or event.key == "0": return
+        idx = int(event.key) - 1
+        path = self.current
+        if path is None or idx >= len(self.proposals): return
+        event.stop()
+        hd = self.proposals[idx][0]
+        apply_pick(path, hd)
+        self._advance(f"✓ {path.stem} → hd: {hd}")
+
     def action_quit_app(self) -> None:
         """Quit, always reporting the delete queue so nothing accumulates unseen."""
         parts = [self.triage.summary()]
@@ -326,7 +356,7 @@ class InboxTriageApp(App):
                          f"run drain_deletes(dry_run=False) to apply")
         self.exit(message=" | ".join(parts))
 
-# %% ../nbs/11_inbox_app.ipynb #df59c21c
+# %% ../nbs/11_inbox_app.ipynb #0c9bff81
 def main():
     """CLI entry point for inbox triage, and for draining the delete queue."""
     import argparse
@@ -336,12 +366,42 @@ def main():
                         help="Restrict to one inbox subfolder, e.g. Phone")
     parser.add_argument("--limit", type=int, default=None,
                         help="Stop after N notes — handy for a 15-minute session")
+    parser.add_argument("--pick", action="store_true",
+                        help="Stage 3: choose from the proposals written into note bodies.")
+    parser.add_argument("--file", action="store_true",
+                        help="Stage 4: move notes whose hd: is complete. Lists unless --yes.")
     parser.add_argument("--drain", action="store_true",
                         help="Apply queued deletes instead of triaging. Lists them and stops "
                              "unless --yes is given.")
     parser.add_argument("--yes", action="store_true",
                         help="With --drain: actually delete (to OS trash via the obsidian CLI).")
     args = parser.parse_args()
+
+    if args.file:
+        folders = load_hd_folders()
+        plans = [plan_filing(n, h, folders) for n, h in ready_to_file()]
+        ready = [pl for pl in plans if pl.ready]
+        blocked = [pl for pl in plans if not pl.ready]
+        if not ready:
+            print("Nothing ready to file.")
+        else:
+            print(f"{len(ready)} note(s) ready to file"
+                  + ("" if args.yes else " - nothing moved, re-run with --yes"))
+            moved = failed = 0
+            for plan in ready:
+                ok, detail = file_note(plan, dry_run=not args.yes)
+                print(f"  {'ok  ' if ok else 'FAIL'}  {plan.note.name[:44]:<46} {detail}")
+                moved, failed = moved + bool(ok), failed + (not ok)
+            if args.yes:
+                print()
+                print(f"Moved {moved}, failed {failed}.")
+        if blocked:
+            print()
+            print(f"{len(blocked)} not filable yet:")
+            for kind in ("needs_label", "no_category"):
+                n = sum(pl.kind == kind for pl in blocked)
+                if n: print(f"  {n:>4}  {kind}")
+        return
 
     if args.drain:
         queued = pending_deletes()
@@ -362,7 +422,8 @@ def main():
         print(f"Done. {remaining} still queued." if remaining else "Done. Queue empty.")
         return
 
-    result = InboxTriageApp(folder=args.folder, limit=args.limit).run()
+    result = InboxTriageApp(folder=args.folder, limit=args.limit,
+                            mode="pick" if args.pick else "triage").run()
     if result: print(result)
 
 
