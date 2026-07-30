@@ -1,64 +1,141 @@
-# FileSorter
+# hfm-tools
 
-Keyboard-driven TUI file sorter with Johnny Decimal support. Review files one at a time with a content preview, then route them to a flat "to-read" folder or a hierarchical Johnny Decimal folder structure — all within a `sorted/` staging area.
+> Two keyboard-driven sorters. **FileSorter** empties your Downloads folder. **Inbox Triage** empties the Braincave inbox.
 
-## Installation
+They share the preview code, the undo stack and the Johnny Decimal models, but they solve different problems and are used differently. Downloads is a pile of files you route in one pass. The vault inbox is 2600 notes you drain fifteen minutes at a time, with Hoggle doing the lookup work overnight in between.
 
-```bash
-uv sync
+---
+
+# Inbox Triage — the Braincave pipeline
+
+## Why it is shaped like this
+
+The obvious design is "let Hoggle sort the inbox automatically". That ran nightly until July 2026 and was switched off deliberately. It had moved 38 notes out of 2657, and worse, Jelle had stopped trusting the result: **a misfiled note in `d1`/`d5`/`d6` is worse than an unsorted one, because it is silently wrong in a place you rely on.**
+
+So the work is split by who is good at what. You make every judgement call. Hoggle does the lookup — reading 168 category descriptions and remembering which project folders already exist — which is the part that is slow by hand and easy for a model.
+
+**Nothing moves until you have chosen a complete Hopsakee.Decimal number.**
+
+## The loop
+
+```
+       you, 15 min            overnight              you, 2 min           deterministic
+    ┌────────────────┐   ┌─────────────────┐   ┌──────────────────┐   ┌──────────────┐
+    │ 1. triage      │──▶│ 2. propose      │──▶│ 3. pick          │──▶│ 4. file      │
+    │ keep / delete  │   │ 1-3 candidate   │   │ press 1, 2 or 3  │   │ obsidian     │
+    │ + domain/area  │   │ complete numbers│   │                  │   │ move         │
+    └────────────────┘   └─────────────────┘   └──────────────────┘   └──────────────┘
 ```
 
-## Usage
+Every step is resumable. Stop after six notes; the next run picks up at note seven.
 
-Sort your Downloads folder (default):
-
-```bash
-uv run python -m filesorter
-```
-
-Sort a different directory:
+## Daily use
 
 ```bash
-uv run python -m filesorter --source ~/Documents/unsorted
+cd ~/Code/hfm-tools
+
+# 1. Triage — the only step that takes real time
+uv run python -m filesorter.inbox_app --folder Phone --limit 20
+
+# 2. Nothing. The nightly proposes at 02:10.
+
+# 3. Pick from what it proposed
+uv run python -m filesorter.inbox_app --pick
+
+# 4. File everything that now has a complete number
+uv run python -m filesorter.inbox_app --file          # look first
+uv run python -m filesorter.inbox_app --file --yes    # then move
+
+# Whenever: actually delete what you marked with `d`
+uv run python -m filesorter.inbox_app --drain --yes
 ```
 
-Use a custom config file:
+Leave off `--folder` to work the whole inbox in priority order: Phone, Hoggle, NewNotes, Notes, Readwise, Snipd, Atlas, Sources, Omnivore, zz_NoteStationDumb.
+
+## Triage keys
+
+| Key | What it does |
+|-----|--------------|
+| `h` | **Keep.** Then pick a `note-status` from your own vault list, a domain, and optionally an area. Writes `note-status:` and a partial `hd:`. Does not move the note. |
+| `d` | **Delete.** Queued, not performed — nothing is removed until `--drain --yes`. |
+| `t` | **Too hard right now.** Appends `- [ ] Organise this note [15m] ⏳ <tomorrow>` to the note, so it turns up in your daily plan. |
+| `s` | Skip. Comes back next session — that is the difference between `s` and `t`. |
+| `u` | Undo. Restores the note byte for byte. |
+| `o` | Open in Obsidian. |
+| `q` | Quit. Everything already decided is saved. |
+
+The left panel shows the **inbound link count**. A note other notes link to is connected, and deleting it breaks something — that number is the main reason not to delete on reflex.
+
+## What the numbers mean
+
+`d1.53.12` is four things in three parts: domain `d1`, area `5`, category `53`, item `12`. The area is the category's first digit, not a segment of its own, which is why `d1.5` is a valid halfway value — it is a truncated `d1.53`.
+
+An **item id is a group, not a note.** `d6.75.04` is the folder `Hoggle_d6.75.04`, and every note about that project shares it. Most notes join a group that already exists; a new id is only for a genuinely new project, book or topic. New group folders are always `Label_dX.CC.II` with an underscore.
+
+## Status
 
 ```bash
-uv run python -m filesorter --config path/to/config.yaml
+uv run python -m filesorter.inbox_app --file    # what is ready, what is blocked
 ```
 
-## Keyboard shortcuts
+Three queues, and a note is in exactly one:
+
+- **awaiting triage** — you have not said keep or delete yet
+- **awaiting a proposal** — kept, `hd:` still partial, the nightly will get to it
+- **complete `hd:`** — ready to file, or blocked on a label for a new group
+
+---
+
+# FileSorter — the Downloads folder
+
+```bash
+uv run python -m filesorter                       # ~/Downloads
+uv run python -m filesorter --source ~/somewhere
+```
 
 | Key | Action |
 |-----|--------|
-| `r` | Move file to `sorted/to-read/` |
-| `f` | Move file to a Johnny Decimal category in `sorted/filesystem/` |
-| `d` | Permanently delete file |
-| `s` | Skip file |
-| `u` | Undo last action |
-| `q` | Quit |
+| `r` | move to `sorted/to-read/` |
+| `f` | move to a Johnny Decimal category under `sorted/filesystem/` |
+| `b` | move to `sorted/braincave/` |
+| `d` | delete permanently |
+| `s` / `u` / `q` | skip / undo / quit |
 
-## How it works
+Files land in a `sorted/` staging area inside the source folder. Domain data comes from `config/d*.json` — swap the JSON, no code change.
 
-1. FileSorter scans the source directory for unsorted files
-2. Each file is shown one at a time with metadata (name, type, size, date) and a content preview
-3. Press a key to route the file to the right destination
-4. When pressing `f`, select a domain and then a category from the Johnny Decimal structure
-5. Files are moved into `sorted/` inside the source directory
+> **FileSorter and Inbox Triage read different structure files on purpose.** FileSorter uses the static `config/*.json`; Inbox Triage uses `~/.claude/skills/_HD/hd-structure.json`, which is rebuilt from the live vault every night and is the only authoritative source for anything touching Braincave.
 
-## Johnny Decimal configuration
+---
 
-Domain/category data is loaded from JSON files in the `config/` directory. To update the folder structure, replace or edit the JSON files — no code changes needed.
+## Where the pieces live
+
+| Piece | Where | Why there |
+|-------|-------|-----------|
+| Both TUIs, filing logic | this repo | personal CLI tools, and they need no LLM |
+| The overnight proposer | `~/.claude/skills/_BRAINCAVE_INBOX_SORT/Tools/ProposeHd.py` | it calls `Inference.ts`, which is PAI's |
+| Nightly trigger | `run-braincave-nightly.sh` step 6 | after step 2.5 refreshes the structure cache |
+| Decision ledger | `~/.claude/PAI/MEMORY/LEARNING/hd-choices.jsonl` | one line per verdict |
+
+The proposer imports `filesorter/inbox.py` directly — that module is stdlib-only, so it needs no virtualenv. The contract between the two repos is the vault's frontmatter and nothing else.
+
+## The ledger, and what it is for
+
+Every verdict appends one line: what was proposed, what you chose, and whether your choice was among the candidates.
+
+That exists for one reason. When you keep overriding a category, the category is not the problem — **its description is.** The descriptions live in your vault MOCs (`! 44 Persoonlijke productiviteit.md`), `BuildCache` folds them into `hd-structure.json` every night, and the proposer reads them. So a bad description quietly produces bad proposals forever, and a fixed one improves every future proposal.
+
+Reading the ledger to find those descriptions is the last unbuilt piece. It needs a few hundred picks before the pattern is real rather than noise, so it stays unbuilt on purpose.
 
 ## Development
 
-This project uses **nbdev** for notebook-driven development. Source notebooks live in `nbs/`; the `filesorter/` package is auto-generated.
+nbdev. Source notebooks in `nbs/`; `filesorter/` is generated.
 
 ```bash
-uv run nbdev_export     # Export notebooks → .py modules
-uv run nbdev_test       # Run all tests
-uv run nbdev_prepare    # Export + test + clean + readme
+uv run nbdev-export     # notebooks → .py
+uv run nbdev-test       # run all notebooks
+uv run nbdev-prepare    # export + test + clean + readme
 ```
 
-**Never edit `.py` files in `filesorter/` directly** — edit the corresponding notebook in `nbs/` instead.
+Note the **hyphens** — nbdev 3.x renamed these from the underscore forms. `nbdev-readme` currently fails on a quarto worker that cannot import the package; the rest pass.
+
+**Never edit `.py` files in `filesorter/` directly** — edit the notebook in `nbs/`. Same for this README: its source is `nbs/index.ipynb`.

@@ -6,7 +6,7 @@
 __all__ = ['DOMAIN_ONLY', 'APP_CSS', 'StatusPicker', 'DomainPicker', 'AreaPicker', 'NoteInfoPanel', 'NotePreviewPanel',
            'InboxTriageApp', 'main']
 
-# %% ../nbs/11_inbox_app.ipynb #c14d17cb
+# %% ../nbs/11_inbox_app.ipynb #666be384
 from pathlib import Path
 
 from rich.text import Text
@@ -41,7 +41,7 @@ from filesorter.inbox import (
     parse_note,
 )
 
-# %% ../nbs/11_inbox_app.ipynb #578a78df
+# %% ../nbs/11_inbox_app.ipynb #c64d4697
 class _KeyedPicker(ModalScreen[str | None]):
     """Modal list where each row has its own shortcut key. Esc cancels."""
 
@@ -103,7 +103,7 @@ class AreaPicker(_KeyedPicker):
 #: Sentinel returned by AreaPicker when Jelle declines to narrow to an area.
 DOMAIN_ONLY = "__domain_only__"
 
-# %% ../nbs/11_inbox_app.ipynb #8025cf11
+# %% ../nbs/11_inbox_app.ipynb #3599d559
 class NoteInfoPanel(Static):
     """Left panel: which note, where from, how connected."""
 
@@ -136,7 +136,7 @@ class NotePreviewPanel(Static):
         elif not body: self.update(Text("(no body — frontmatter only)", style="dim"))
         else: self.update("\n".join(body))
 
-# %% ../nbs/11_inbox_app.ipynb #5c74a2e1
+# %% ../nbs/11_inbox_app.ipynb #76f050c5
 APP_CSS = """
 Screen { background: $surface; }
 #main-panels { height: 1fr; }
@@ -149,7 +149,7 @@ Screen { background: $surface; }
 StatusPicker, DomainPicker, AreaPicker { align: center middle; }
 """
 
-# %% ../nbs/11_inbox_app.ipynb #a5e2337c
+# %% ../nbs/11_inbox_app.ipynb #520f1f00
 class InboxTriageApp(App):
     """Triage the Braincave inbox one note at a time."""
 
@@ -356,7 +356,7 @@ class InboxTriageApp(App):
                          f"run drain_deletes(dry_run=False) to apply")
         self.exit(message=" | ".join(parts))
 
-# %% ../nbs/11_inbox_app.ipynb #0c9bff81
+# %% ../nbs/11_inbox_app.ipynb #e23444f4
 def main():
     """CLI entry point for inbox triage, and for draining the delete queue."""
     import argparse
