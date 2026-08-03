@@ -68,8 +68,18 @@ inbox status          # counts for all three queues
 inbox help
 ```
 
-Anything that changes the vault needs the literal word `yes`. `tmux_sort.sh` is the
-equivalent launcher for the Downloads FileSorter.
+Anything that changes the vault needs the literal word `yes`.
+
+`tmux_sort.sh` and `tmux_inbox.sh` are tmux launchers — for FileSorter and Inbox Triage
+respectively — that start a **detached** session an agent (Amp, Hoggle) can attach to and drive
+with `tmux send-keys`. That is a different use case from `inbox`/`inbox.sh` above, which runs in
+the **foreground** for you to use directly from a terminal.
+
+```bash
+./tmux_inbox.sh              # whole inbox, priority order
+./tmux_inbox.sh Phone        # one source folder
+./tmux_inbox.sh Phone 20     # ... and stop after 20 notes
+```
 
 ## Triage keys
 
@@ -122,6 +132,10 @@ uv run python -m filesorter --source ~/somewhere
 
 Files land in a `sorted/` staging area inside the source folder. Domain data comes from `config/d*.json` — swap the JSON, no code change.
 
+Zip (and jar) files preview as a list of their contents — names and sizes — instead of garbled binary text.
+
+Pressing `f` shows up to 3 **suggested categories** first, ranked by keyword overlap between the filename/preview and each category's name, tags and description — deterministic, no LLM, no network. Press `1`, `2` or `3` to accept one, `m` to browse the full domain/category picker instead, ESC to cancel. No suggestion beats no signal: if nothing overlaps, it skips straight to the manual picker rather than guess. `b` (Braincave) is deliberately left out of this — those files get resolved with the vault's own Hopsakee Decimal machinery once you file them into the Braincave inbox.
+
 > **FileSorter and Inbox Triage read different structure files on purpose.** FileSorter uses the static `config/*.json`; Inbox Triage uses `~/.claude/skills/_HD/hd-structure.json`, which is rebuilt from the live vault every night and is the only authoritative source for anything touching Braincave.
 
 ---
@@ -131,6 +145,7 @@ Files land in a `sorted/` staging area inside the source folder. Domain data com
 | Piece | Where | Why there |
 |-------|-------|-----------|
 | Both TUIs, filing logic | this repo | personal CLI tools, and they need no LLM |
+| FileSorter's category suggestion | `filesorter/suggest.py` (this repo) | keyword overlap against `config/d*.json` — no LLM, distinct from the Braincave proposer below |
 | The overnight proposer | `~/.claude/skills/_BRAINCAVE_INBOX_SORT/Tools/ProposeHd.py` | it calls `Inference.ts`, which is PAI's |
 | Nightly trigger | `run-braincave-nightly.sh` step 6 | after step 2.5 refreshes the structure cache |
 | Decision ledger | `~/.claude/PAI/MEMORY/LEARNING/hd-choices.jsonl` | one line per verdict |

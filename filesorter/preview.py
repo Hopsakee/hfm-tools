@@ -8,7 +8,7 @@ __all__ = ['IMAGE_EXTS', 'TEXT_EXTS', 'PreviewResult', 'get_preview']
 # %% ../nbs/02_preview.ipynb #g7h8i9
 from pathlib import Path
 from dataclasses import dataclass
-import subprocess, shutil
+import subprocess, shutil, zipfile
 
 # %% ../nbs/02_preview.ipynb #j1k2l3
 @dataclass
@@ -106,15 +106,28 @@ def _preview_xlsx(path: Path, n: int) -> PreviewResult:
     except Exception as e:
         return PreviewResult(lines=[], error=str(e))
 
+# %% ../nbs/02_preview.ipynb #e158b040
+def _preview_zip(path: Path, n: int) -> PreviewResult:
+    """Preview a ZIP archive — list its entries (name and size) instead of garbled binary text."""
+    try:
+        with zipfile.ZipFile(path) as zf:
+            infos = zf.infolist()
+            lines = [f"{i.filename}  ({i.file_size:,} B)" for i in infos[:n]]
+            if len(infos) > n: lines.append(f"... and {len(infos) - n} more")
+            return PreviewResult(lines=lines or ["(empty archive)"])
+    except Exception as e:
+        return PreviewResult(lines=[], error=str(e))
+
 # %% ../nbs/02_preview.ipynb #v4w5x6
 def get_preview(path: Path, n: int = 20) -> PreviewResult:
     """Get a preview of `path` — dispatches based on file extension."""
     suffix = path.suffix.lower()
     if suffix in IMAGE_EXTS:
-        return PreviewResult(lines=[f"\ud83d\udcf7 Image: {path.name}", f"Open with [o] key"], is_image=True)
+        return PreviewResult(lines=[f"📷 Image: {path.name}", f"Open with [o] key"], is_image=True)
     if suffix == '.pdf': return _preview_pdf(path, n)
     if suffix == '.docx': return _preview_docx(path, n)
     if suffix == '.epub': return _preview_epub(path, n)
     if suffix in ('.xlsx', '.xls'): return _preview_xlsx(path, n)
+    if suffix in ('.zip', '.jar'): return _preview_zip(path, n)
     # Default: try as text
     return _preview_text(path, n)
