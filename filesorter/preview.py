@@ -45,18 +45,25 @@ def _preview_text(path: Path, n: int) -> PreviewResult:
         return PreviewResult(lines=[], error=str(e))
 
 def _preview_pdf(path: Path, n: int) -> PreviewResult:
-    """Preview a PDF using pdfplumber."""
+    """Preview a PDF using pdfplumber. A scanned PDF (no text layer) gets an explicit
+    marker instead of being reported as an empty file — its pages are photos, not blanks."""
     try:
         import pdfplumber
         lines = []
+        has_images = False
         with pdfplumber.open(path) as pdf:
+            page_count = len(pdf.pages)
             for page in pdf.pages:
                 text = page.extract_text() or ""
+                if page.images: has_images = True
                 for line in text.splitlines():
                     stripped = line.strip()
                     if stripped:
                         lines.append(stripped)
                         if len(lines) >= n: return PreviewResult(lines=lines)
+        if not lines and has_images:
+            noun = "page" if page_count == 1 else "pages"
+            return PreviewResult(lines=[f"📷 Scanned PDF — {page_count} {noun}, no text layer", "Open with [o] key"], is_image=True)
         return PreviewResult(lines=lines)
     except Exception as e:
         return PreviewResult(lines=[], error=str(e))
