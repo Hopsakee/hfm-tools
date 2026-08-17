@@ -70,15 +70,18 @@ inbox help
 
 Anything that changes the vault needs the literal word `yes`.
 
-`tmux_sort.sh` and `tmux_inbox.sh` are tmux launchers — for FileSorter and Inbox Triage
-respectively — that start a **detached** session an agent (Amp, Hoggle) can attach to and drive
-with `tmux send-keys`. That is a different use case from `inbox`/`inbox.sh` above, which runs in
-the **foreground** for you to use directly from a terminal.
+`folder-sort.sh` and `braincave-inbox-sort.sh` are tmux launchers — for FileSorter and Inbox
+Triage respectively — that start a **detached** session an agent (Amp, Hoggle) can attach to and
+drive with `tmux send-keys`. That is a different use case from `inbox`/`inbox.sh` above, which
+runs in the **foreground** for you to use directly from a terminal.
 
 ```bash
-./tmux_inbox.sh              # whole inbox, priority order
-./tmux_inbox.sh Phone        # one source folder
-./tmux_inbox.sh Phone 20     # ... and stop after 20 notes
+./folder-sort.sh                    # sort ~/Downloads (default)
+./folder-sort.sh ~/some/folder      # sort a specific folder instead
+
+./braincave-inbox-sort.sh              # whole inbox, priority order
+./braincave-inbox-sort.sh Phone        # one source folder
+./braincave-inbox-sort.sh Phone 20     # ... and stop after 20 notes
 ```
 
 ## Triage keys

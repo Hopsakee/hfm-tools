@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Braincave inbox sorter — the four-stage pipeline, one short command per stage.
-# Companion to tmux_sort.sh (which launches the Downloads FileSorter).
+# Companion to folder-sort.sh (which launches the Downloads FileSorter).
 #
 # Usage:
 #   inbox                    triage the whole inbox, in priority order
