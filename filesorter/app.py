@@ -81,7 +81,7 @@ class DomainSelector(ModalScreen[JDDomain | None]):
                 ListItem(Label(f"  {d.domain_id} \u2014 {d.name.split(' ', 1)[1] if ' ' in d.name else d.name}"), id=f"domain-{i}")
                 for i, d in enumerate(self.domains)
             ], id="domain-list"),
-            Label("  [ESC] Cancel", id="modal-hint"),
+            Label("  \\[ESC] Cancel", id="modal-hint"),
             id="modal-container",
         )
 
@@ -115,7 +115,7 @@ class CategorySelector(ModalScreen[JDCategory | None]):
             Label(f"SELECT CATEGORY \u2014 {self.domain.name}", id="modal-title"),
             Label("Type category number or browse:", id="type-hint"),
             ListView(*items, id="category-list"),
-            Label("  [ESC] Cancel", id="modal-hint"),
+            Label("  \\[ESC] Cancel", id="modal-hint"),
             id="modal-container",
         )
 
@@ -159,13 +159,14 @@ class SuggestionScreen(ModalScreen):
         rows = [Label(f"SUGGESTED CATEGORIES — {self.filename}", id="modal-title")]
         for i, s in enumerate(self.suggestions, start=1):
             matched = ", ".join(s.matched) if s.matched else "—"
-            rows.append(Label(f"  [{i}] {s.path}  (matched: {matched})"))
-        rows.append(Label("  [m] Browse manually instead", id="type-hint"))
-        rows.append(Label("  [ESC] Cancel", id="modal-hint"))
+            rows.append(Label(f"  \\[{i}] {s.path}  (matched: {matched})"))
+        rows.append(Label("  \\[m] Browse manually instead", id="type-hint"))
+        rows.append(Label("  \\[ESC] Cancel", id="modal-hint"))
         yield Vertical(*rows, id="modal-container")
 
     def on_key(self, event) -> None:
-        if event.key in ("1", "2", "3"):
+        if event.key == "m": event.stop(); self.dismiss("manual")
+        elif event.key in ("1", "2", "3"):
             idx = int(event.key) - 1
             if idx < len(self.suggestions): self.dismiss(self.suggestions[idx])
 
