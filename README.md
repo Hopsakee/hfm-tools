@@ -1,8 +1,8 @@
 # hfm-tools
 
-> Two keyboard-driven sorters. **FileSorter** empties your Downloads folder. **Inbox Triage** empties the Braincave inbox.
+> Two keyboard-driven sorters. **FileSorter** empties any folder: Downloads by default, `~/Drive/ToRead` for the recurring read-folder cleanup. **Inbox Triage** empties the Braincave inbox.
 
-They share the preview code, the undo stack and the Johnny Decimal models, but they solve different problems and are used differently. Downloads is a pile of files you route in one pass. The vault inbox is 2600 notes you drain fifteen minutes at a time, with Hoggle doing the lookup work overnight in between.
+They share the preview code, the undo stack and the Johnny Decimal models, but they solve different problems and are used differently. A folder like Downloads or `~/Drive/ToRead` is a pile of files you route in one pass. The vault inbox is 2600 notes you drain fifteen minutes at a time, with Hoggle doing the lookup work overnight in between.
 
 ---
 
@@ -118,12 +118,15 @@ Three queues, and a note is in exactly one:
 
 ---
 
-# FileSorter — the Downloads folder
+# FileSorter — any folder (Downloads by default)
 
 ```bash
 uv run python -m filesorter                       # ~/Downloads
 uv run python -m filesorter --source ~/somewhere
+uv run python -m filesorter --source ~/Drive/ToRead   # the read-folder cleanup
 ```
+
+The repeating Braincave task `#cleanup Read folder (~/Drive/ToRead) with hfm-tools repo` uses it this way.
 
 | Key | Action |
 |-----|--------|
@@ -136,6 +139,8 @@ uv run python -m filesorter --source ~/somewhere
 Files land in a `sorted/` staging area inside the source folder. Domain data comes from `config/d*.json` — swap the JSON, no code change.
 
 Zip (and jar) files preview as a list of their contents — names and sizes — instead of garbled binary text.
+
+A PDF with no text layer (a phone scan, e.g. Microsoft Lens) previews as `📷 Scanned PDF — N pages, no text layer` instead of `(empty file)`, and `o` opens it in the viewer, as for images.
 
 Pressing `f` shows up to 3 **suggested categories** first, ranked by keyword overlap between the filename/preview and each category's name, tags and description — deterministic, no LLM, no network. Press `1`, `2` or `3` to accept one, `m` to browse the full domain/category picker instead, ESC to cancel. No suggestion beats no signal: if nothing overlaps, it skips straight to the manual picker rather than guess. `b` (Braincave) is deliberately left out of this — those files get resolved with the vault's own Hopsakee Decimal machinery once you file them into the Braincave inbox.
 
